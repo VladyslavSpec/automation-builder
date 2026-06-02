@@ -2,12 +2,14 @@ import re
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from pydantic import BaseModel
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from datetime import datetime, timezone
 
 from database import get_db
-from models import User
+from models import User, Workflow, WorkflowExecution
 from core.auth import hash_password, verify_password, create_access_token, decode_token
 
 limiter = Limiter(key_func=get_remote_address)
@@ -71,8 +73,58 @@ def me(current_user: User = Depends(get_current_user)):
     return {
         "id": current_user.id,
         "email": current_user.email,
+        "name": current_user.name or "",
         "plan": current_user.plan,
         "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
+    }
+
+
+class ProfileUpdate(BaseModel):
+    name: str
+
+
+@router.patch("/profile")
+def update_profile(
+    body: ProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    current_user.name = body.name.strip()[:100]
+    db.commit()
+    return {"updated": True}
+
+
+PLAN_LIMITS = {
+    "free":   {"runs": 100,   "workflows": 3},
+    "solo":   {"runs": 2000,  "workflows": 20},
+    "pro":    {"runs": 20000, "workflows": None},
+    "agency": {"runs": None,  "workflows": None},
+}
+
+
+@router.get("/usage")
+def get_usage(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    now = datetime.now(timezone.utc)
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    exec_count = (
+        db.query(func.count(WorkflowExecution.id))
+        .join(Workflow, WorkflowExecution.workflow_id == Workflow.id)
+        .filter(Workflow.user_id == current_user.id, WorkflowExecution.started_at >= month_start)
+        .scalar()
+    ) or 0
+
+    wf_count = (
+        db.query(func.count(Workflow.id))
+        .filter(Workflow.user_id == current_user.id, Workflow.is_active == True)
+        .scalar()
+    ) or 0
+
+    limits = PLAN_LIMITS.get(current_user.plan, PLAN_LIMITS["free"])
+    return {
+        "executions_this_month": exec_count,
+        "workflows_count": wf_count,
+        "limits": limits,
     }
 
 

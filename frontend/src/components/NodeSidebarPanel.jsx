@@ -17,7 +17,7 @@ export default function NodeSidebarPanel() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <div style={{ padding: '14px 12px 8px', borderBottom: '1px solid #ffffff10', flexShrink: 0 }}>
-        <div style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 13, marginBottom: 8 }}>⚡ Nodes</div>
+        <div style={{ color: '#94a3b8', fontWeight: 600, fontSize: 11, marginBottom: 8, letterSpacing: 0.5, textTransform: 'uppercase' }}>Nodes</div>
         <input
           placeholder="Search..."
           value={search}

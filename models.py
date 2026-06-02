@@ -23,6 +23,7 @@ class User(Base):
     id = Column(String, primary_key=True, default=new_id)
     email = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=True)
+    name = Column(String, nullable=True, default="")
     plan = Column(String, default="free")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

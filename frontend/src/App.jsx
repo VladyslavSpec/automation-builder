@@ -1,10 +1,8 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import {
   ReactFlow,
-  Background,
   Controls,
   MiniMap,
-  BackgroundVariant,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import axios from 'axios';
@@ -15,6 +13,7 @@ import Sidebar from './components/Sidebar';
 import ConfigPanel from './components/ConfigPanel';
 import ExecutionPanel from './components/ExecutionPanel';
 import AuthPage from './components/AuthPage';
+import DotBackground from './components/DotBackground';
 
 const API = import.meta.env.VITE_API_URL || '';
 const nodeTypes = { automationNode: AutomationNode };
@@ -43,8 +42,8 @@ export default function App() {
 
   if (!authChecked) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0f0f1a', color: '#64748b', fontSize: 14 }}>
-        Loading...
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0a0a12', color: '#334155', fontSize: 13, letterSpacing: 0.5 }}>
+        Loading
       </div>
     );
   }
@@ -87,54 +86,62 @@ function WorkflowEditor({ user, onLogout }) {
     addNode(nodeType, nodeMeta);
   }, [addNode]);
 
+  const topbarBtn = (primary) => ({
+    background: primary ? '#6366f1' : 'transparent',
+    border: `1px solid ${primary ? '#6366f1' : '#ffffff12'}`,
+    borderRadius: 4,
+    color: primary ? '#fff' : '#94a3b8',
+    padding: '4px 12px',
+    cursor: 'pointer',
+    fontSize: 11,
+    fontWeight: primary ? 600 : 400,
+    letterSpacing: 0.3,
+    whiteSpace: 'nowrap',
+    transition: 'opacity 0.1s',
+  });
+
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#0f0f1a', color: '#f1f5f9', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ display: 'flex', height: '100vh', background: '#0a0a12', color: '#e2e8f0', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Sidebar user={user} onLogout={onLogout} />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Topbar */}
         <div style={{
-          height: 48, background: '#13131f', borderBottom: '1px solid #ffffff10',
-          display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12, flexShrink: 0,
+          height: 44, background: '#0d0d1a', borderBottom: '1px solid #ffffff0d',
+          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 10, flexShrink: 0,
         }}>
           <input
             value={workflowName}
             onChange={e => setWorkflowName(e.target.value)}
             style={{
-              background: 'none', border: 'none', color: '#f1f5f9', fontSize: 14,
-              fontWeight: 600, outline: 'none', minWidth: 0, flex: 1, maxWidth: 260,
+              background: 'none', border: 'none', color: '#e2e8f0', fontSize: 13,
+              fontWeight: 500, outline: 'none', minWidth: 0, flex: 1, maxWidth: 280,
+              letterSpacing: 0.1,
             }}
           />
           <div style={{ flex: 1 }} />
-          <span style={{ fontSize: 11, color: '#475569', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 10, color: '#2d3a4a', whiteSpace: 'nowrap', letterSpacing: 0.3 }}>
             {nodes.length} nodes · {edges.length} edges
           </span>
           <button
             onClick={saveWorkflow}
             disabled={isSaving}
-            style={{
-              background: '#1e1e2e', border: '1px solid #ffffff20', borderRadius: 6,
-              color: isSaving ? '#64748b' : '#f1f5f9', padding: '5px 14px',
-              cursor: isSaving ? 'default' : 'pointer', fontSize: 12, whiteSpace: 'nowrap',
-            }}
+            style={{ ...topbarBtn(false), opacity: isSaving ? 0.4 : 1 }}
           >
-            {isSaving ? 'Saving…' : '💾 Save'}
+            {isSaving ? 'Saving...' : 'Save'}
           </button>
           <button
             onClick={() => runWorkflow()}
             disabled={isRunning}
-            style={{
-              background: isRunning ? '#1e1e2e' : '#6366f1', border: 'none', borderRadius: 6,
-              color: isRunning ? '#64748b' : '#fff', padding: '5px 14px',
-              cursor: isRunning ? 'default' : 'pointer', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap',
-            }}
+            style={{ ...topbarBtn(true), opacity: isRunning ? 0.5 : 1 }}
           >
-            {isRunning ? '⟳ Running…' : '▶ Run'}
+            {isRunning ? 'Running...' : 'Run'}
           </button>
         </div>
 
         {/* Canvas */}
-        <div ref={reactFlowWrapper} style={{ flex: 1 }}>
+        <div ref={reactFlowWrapper} style={{ flex: 1, position: 'relative' }}>
+          <DotBackground />
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -146,13 +153,16 @@ function WorkflowEditor({ user, onLogout }) {
             nodeTypes={nodeTypes}
             fitView
             deleteKeyCode="Delete"
-            style={{ background: '#0f0f1a' }}
+            style={{ background: 'transparent', position: 'relative', zIndex: 1 }}
           >
-            <Background variant={BackgroundVariant.Dots} color="#ffffff08" gap={20} />
-            <Controls style={{ background: '#1e1e2e', border: '1px solid #ffffff10' }} />
+            <Controls
+              style={{ background: '#0d0d1a', border: '1px solid #ffffff0d', borderRadius: 4 }}
+              showInteractive={false}
+            />
             <MiniMap
               nodeColor={n => n.data?.color || '#6366f1'}
-              style={{ background: '#13131f', border: '1px solid #ffffff10' }}
+              style={{ background: '#0d0d1a', border: '1px solid #ffffff0d', borderRadius: 4 }}
+              maskColor="rgba(0,0,0,0.6)"
             />
           </ReactFlow>
         </div>
@@ -160,15 +170,17 @@ function WorkflowEditor({ user, onLogout }) {
 
       {/* Right panel */}
       <div style={{
-        width: 300, background: '#13131f', borderLeft: '1px solid #ffffff10',
+        width: 300, background: '#0d0d1a', borderLeft: '1px solid #ffffff0d',
         display: 'flex', flexDirection: 'column', flexShrink: 0,
       }}>
         {configPanelNode ? (
           <ConfigPanel />
         ) : (
           <>
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid #ffffff10' }}>
-              <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700 }}>▶ Run Workflow</div>
+            <div style={{ padding: '11px 14px', borderBottom: '1px solid #ffffff0d' }}>
+              <div style={{ fontSize: 11, color: '#475569', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>
+                Execution
+              </div>
             </div>
             <ExecutionPanel />
           </>

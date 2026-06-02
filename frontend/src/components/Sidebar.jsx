@@ -7,128 +7,168 @@ import SettingsPanel from './SettingsPanel';
 import PlansPanel from './PlansPanel';
 import DocsPanel from './DocsPanel';
 
-const TOP_ICONS = [
-  { id: 'nodes', icon: '⚡', label: 'Nodes' },
-  { id: 'workflows', icon: '📋', label: 'Workflows' },
-  { id: 'docs', icon: '📖', label: 'Docs' },
+// Clean geometric SVG icons — 15×15 viewBox, stroke-based
+const Icons = {
+  nodes: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+      <rect x="8.5" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+      <rect x="1" y="8.5" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+      <rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+    </svg>
+  ),
+  workflows: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <line x1="2" y1="4"   x2="13" y2="4"   stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="2" y1="7.5" x2="13" y2="7.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="2" y1="11"  x2="9"  y2="11"  stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+    </svg>
+  ),
+  docs: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <path d="M3 1.5h5.5L12 5v8.5H3V1.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+      <path d="M8.5 1.5V5H12" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+      <line x1="5" y1="7.5"  x2="10" y2="7.5"  stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="5" y1="10"   x2="10" y2="10"    stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    </svg>
+  ),
+  plans: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <rect x="1" y="4" width="13" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
+      <line x1="1" y1="7.5" x2="14" y2="7.5" stroke="currentColor" strokeWidth="1.4"/>
+      <line x1="3.5" y1="10.2" x2="6.5" y2="10.2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+    </svg>
+  ),
+  settings: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <line x1="2" y1="4"   x2="13" y2="4"   stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="2" y1="7.5" x2="13" y2="7.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      <line x1="2" y1="11"  x2="13" y2="11"  stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      <circle cx="5"   cy="4"   r="1.6" fill="#0f0f1a" stroke="currentColor" strokeWidth="1.2"/>
+      <circle cx="9.5" cy="7.5" r="1.6" fill="#0f0f1a" stroke="currentColor" strokeWidth="1.2"/>
+      <circle cx="6"   cy="11"  r="1.6" fill="#0f0f1a" stroke="currentColor" strokeWidth="1.2"/>
+    </svg>
+  ),
+};
+
+const TOP_NAV = [
+  { id: 'nodes',     label: 'Nodes',     icon: Icons.nodes },
+  { id: 'workflows', label: 'Workflows', icon: Icons.workflows },
+  { id: 'docs',      label: 'Docs',      icon: Icons.docs },
 ];
 
-const BOTTOM_ICONS = [
-  { id: 'plans', icon: '💎', label: 'Plans' },
-  { id: 'settings', icon: '⚙️', label: 'Settings' },
-  { id: 'account', icon: null, label: 'Account' }, // renders avatar letter instead
+const BOTTOM_NAV = [
+  { id: 'plans',    label: 'Plans',    icon: Icons.plans },
+  { id: 'settings', label: 'Settings', icon: Icons.settings },
+  { id: 'account',  label: 'Account',  icon: null }, // uses avatar
 ];
 
 export default function Sidebar({ user, onLogout }) {
-  const activeSidebarPanel = useStore(s => s.activeSidebarPanel);
-  const sidebarExpanded = useStore(s => s.sidebarExpanded);
-  const setActiveSidebarPanel = useStore(s => s.setActiveSidebarPanel);
+  const active = useStore(s => s.activeSidebarPanel);
+  const expanded = useStore(s => s.sidebarExpanded);
+  const setActive = useStore(s => s.setActiveSidebarPanel);
   const [tooltip, setTooltip] = useState(null);
-
-  const renderPanel = () => {
-    switch (activeSidebarPanel) {
-      case 'nodes': return <NodeSidebarPanel />;
-      case 'workflows': return <WorkflowsPanel />;
-      case 'docs': return <DocsPanel />;
-      case 'settings': return <SettingsPanel />;
-      case 'plans': return <PlansPanel user={user} />;
-      case 'account': return <AccountPanel user={user} onLogout={onLogout} />;
-      default: return <NodeSidebarPanel />;
-    }
-  };
 
   const initial = (user?.email || '?')[0].toUpperCase();
 
-  const iconBtn = (id) => {
-    const isActive = activeSidebarPanel === id;
+  const renderPanel = () => {
+    switch (active) {
+      case 'nodes':     return <NodeSidebarPanel />;
+      case 'workflows': return <WorkflowsPanel />;
+      case 'docs':      return <DocsPanel />;
+      case 'settings':  return <SettingsPanel />;
+      case 'plans':     return <PlansPanel user={user} />;
+      case 'account':   return <AccountPanel user={user} onLogout={onLogout} />;
+      default:          return <NodeSidebarPanel />;
+    }
+  };
+
+  const btn = (id) => {
+    const isActive = active === id;
     return {
-      width: 48, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      cursor: 'pointer', border: 'none', position: 'relative',
-      background: isActive ? '#ffffff0f' : 'transparent',
-      borderLeft: `3px solid ${isActive ? '#6366f1' : 'transparent'}`,
-      color: isActive ? '#f1f5f9' : '#64748b',
-      fontSize: 16, transition: 'all 0.1s',
+      width: 48,
+      height: 42,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      border: 'none',
+      position: 'relative',
+      background: isActive ? '#ffffff0a' : 'transparent',
+      borderLeft: `2px solid ${isActive ? '#6366f1' : 'transparent'}`,
+      color: isActive ? '#e2e8f0' : '#475569',
+      transition: 'color 0.1s, background 0.1s, border-color 0.1s',
     };
   };
+
+  const NavBtn = ({ id, icon, label, children }) => (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => setActive(id)}
+        onMouseEnter={() => setTooltip(id)}
+        onMouseLeave={() => setTooltip(null)}
+        style={btn(id)}
+      >
+        {children || icon}
+      </button>
+      {tooltip === id && (
+        <div style={{
+          position: 'absolute', left: 52, top: '50%', transform: 'translateY(-50%)',
+          background: '#1a1a2e', border: '1px solid #ffffff12', borderRadius: 4,
+          padding: '4px 9px', fontSize: 11, color: '#cbd5e1', whiteSpace: 'nowrap',
+          pointerEvents: 'none', zIndex: 999, letterSpacing: 0.2,
+        }}>
+          {label === 'Account' ? (user?.email || 'Account') : label}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div style={{ display: 'flex', height: '100vh', flexShrink: 0 }}>
       {/* Icon rail */}
       <div style={{
-        width: 48, background: '#0f0f1a', borderRight: '1px solid #ffffff10',
-        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-        flexShrink: 0, zIndex: 10,
+        width: 48,
+        background: '#0d0d1a',
+        borderRight: '1px solid #ffffff0d',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        flexShrink: 0,
+        zIndex: 10,
       }}>
-        {/* Top icons */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {TOP_ICONS.map(item => (
-            <div key={item.id} style={{ position: 'relative' }}>
-              <button
-                onClick={() => setActiveSidebarPanel(item.id)}
-                onMouseEnter={() => setTooltip(item.id)}
-                onMouseLeave={() => setTooltip(null)}
-                style={iconBtn(item.id)}
-              >
-                {item.icon}
-              </button>
-              {tooltip === item.id && (
-                <div style={{
-                  position: 'absolute', left: 52, top: '50%', transform: 'translateY(-50%)',
-                  background: '#1e1e2e', border: '1px solid #ffffff15', borderRadius: 5,
-                  padding: '4px 8px', fontSize: 11, color: '#f1f5f9', whiteSpace: 'nowrap',
-                  pointerEvents: 'none', zIndex: 999,
-                }}>
-                  {item.label}
-                </div>
-              )}
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 4 }}>
+          {TOP_NAV.map(item => (
+            <NavBtn key={item.id} {...item} />
           ))}
         </div>
-
-        {/* Bottom icons */}
-        <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 8 }}>
-          {BOTTOM_ICONS.map(item => (
-            <div key={item.id} style={{ position: 'relative' }}>
-              <button
-                onClick={() => setActiveSidebarPanel(item.id)}
-                onMouseEnter={() => setTooltip(item.id)}
-                onMouseLeave={() => setTooltip(null)}
-                style={iconBtn(item.id)}
-              >
-                {item.id === 'account' ? (
-                  <div style={{
-                    width: 26, height: 26, borderRadius: '50%',
-                    background: activeSidebarPanel === 'account' ? '#6366f1' : '#334155',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 700, color: '#fff',
-                    transition: 'background 0.1s',
-                  }}>
-                    {initial}
-                  </div>
-                ) : item.icon}
-              </button>
-              {tooltip === item.id && (
+        <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 10 }}>
+          {BOTTOM_NAV.map(item => (
+            <NavBtn key={item.id} {...item}>
+              {item.id === 'account' ? (
                 <div style={{
-                  position: 'absolute', left: 52, top: '50%', transform: 'translateY(-50%)',
-                  background: '#1e1e2e', border: '1px solid #ffffff15', borderRadius: 5,
-                  padding: '4px 8px', fontSize: 11, color: '#f1f5f9', whiteSpace: 'nowrap',
-                  pointerEvents: 'none', zIndex: 999,
+                  width: 25, height: 25, borderRadius: '50%',
+                  background: active === 'account' ? '#6366f1' : '#1e2a3a',
+                  border: `1px solid ${active === 'account' ? '#6366f1' : '#ffffff18'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 10, fontWeight: 700, color: '#e2e8f0',
+                  letterSpacing: 0.5, transition: 'background 0.1s',
                 }}>
-                  {item.id === 'account' ? (user?.email || 'Account') : item.label}
+                  {initial}
                 </div>
-              )}
-            </div>
+              ) : item.icon}
+            </NavBtn>
           ))}
         </div>
       </div>
 
       {/* Content panel */}
       <div style={{
-        width: sidebarExpanded ? 240 : 0,
+        width: expanded ? 240 : 0,
         overflow: 'hidden',
-        transition: 'width 0.2s ease',
-        background: '#13131f',
-        borderRight: sidebarExpanded ? '1px solid #ffffff10' : 'none',
+        transition: 'width 0.18s ease',
+        background: '#111118',
+        borderRight: expanded ? '1px solid #ffffff0d' : 'none',
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,

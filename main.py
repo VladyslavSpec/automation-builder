@@ -34,7 +34,14 @@ try:
         _conn2.execute(text("ALTER TABLE users ADD COLUMN api_keys JSON;"))
         _conn2.commit()
 except Exception:
-    pass  # Column already exists
+    pass
+
+try:
+    with engine.connect() as _conn3:
+        _conn3.execute(text("ALTER TABLE users ADD COLUMN name VARCHAR;"))
+        _conn3.commit()
+except Exception:
+    pass
 
 limiter = Limiter(key_func=get_remote_address)
 
