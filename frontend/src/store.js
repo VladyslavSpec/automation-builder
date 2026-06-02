@@ -121,6 +121,22 @@ export const useStore = create(persist((set, get) => ({
   openConfig: (node) => set({ configPanelNode: node }),
   closeConfig: () => set({ configPanelNode: null }),
 
+  deleteNode: (nodeId) => set(s => ({
+    nodes: s.nodes.filter(n => n.id !== nodeId),
+    edges: s.edges.filter(e => e.source !== nodeId && e.target !== nodeId),
+    configPanelNode: s.configPanelNode?.id === nodeId ? null : s.configPanelNode,
+  })),
+
+  deleteSelectedNodes: () => set(s => {
+    const selectedIds = new Set(s.nodes.filter(n => n.selected).map(n => n.id));
+    if (selectedIds.size === 0) return {};
+    return {
+      nodes: s.nodes.filter(n => !selectedIds.has(n.id)),
+      edges: s.edges.filter(e => !selectedIds.has(e.source) && !selectedIds.has(e.target)),
+      configPanelNode: selectedIds.has(s.configPanelNode?.id) ? null : s.configPanelNode,
+    };
+  }),
+
   // Build workflow definition from flow graph
   _buildDefinition: () => {
     const { nodes, edges } = get();

@@ -62,6 +62,7 @@ function WorkflowEditor({ user, onLogout }) {
   const addNode = useStore(s => s.addNode);
   const saveWorkflow = useStore(s => s.saveWorkflow);
   const runWorkflow = useStore(s => s.runWorkflow);
+  const closeConfig = useStore(s => s.closeConfig);
   const isSaving = useStore(s => s.isSaving);
   const isRunning = useStore(s => s.isRunning);
   const workflowName = useStore(s => s.workflowName);
@@ -72,6 +73,39 @@ function WorkflowEditor({ user, onLogout }) {
   const reactFlowWrapper = useRef(null);
 
   useEffect(() => { fetchWorkflows(); }, []);
+
+  // Global hotkeys
+  useEffect(() => {
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
+
+      // Ctrl+S → Save (always)
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveWorkflow();
+        return;
+      }
+      // Ctrl+Enter → Run (always)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runWorkflow();
+        return;
+      }
+      // Escape → close config panel
+      if (e.key === 'Escape') {
+        useStore.getState().closeConfig();
+        return;
+      }
+      // Delete / Backspace → delete selected nodes (only when not in input)
+      if (!inInput && (e.key === 'Delete' || e.key === 'Backspace')) {
+        e.preventDefault();
+        useStore.getState().deleteSelectedNodes();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [saveWorkflow, runWorkflow, closeConfig]);
 
   const onDragOver = useCallback(e => {
     e.preventDefault();
@@ -137,6 +171,26 @@ function WorkflowEditor({ user, onLogout }) {
           >
             {isRunning ? 'Running...' : 'Run'}
           </button>
+        </div>
+
+        {/* Hotkey hint bar */}
+        <div style={{
+          height: 26, background: '#080810', borderBottom: '1px solid #ffffff08',
+          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 16, flexShrink: 0,
+        }}>
+          {[
+            ['Ctrl+S', 'Save'],
+            ['Ctrl+↵', 'Run'],
+            ['Del', 'Delete node'],
+            ['Esc', 'Close panel'],
+          ].map(([key, label]) => (
+            <span key={key} style={{ fontSize: 10, color: '#2d3a4a', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <kbd style={{ background: '#0f0f1a', border: '1px solid #ffffff0d', borderRadius: 3, padding: '1px 5px', fontSize: 9, color: '#475569', fontFamily: 'monospace' }}>
+                {key}
+              </kbd>
+              {label}
+            </span>
+          ))}
         </div>
 
         {/* Canvas */}
