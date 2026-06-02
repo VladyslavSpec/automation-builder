@@ -45,6 +45,8 @@ def health():
 
 @app.get("/")
 def root():
+    if FRONTEND_DIST.exists():
+        return FileResponse(str(FRONTEND_DIST / "index.html"))
     return {
         "name": "Automation Builder",
         "version": "0.1.0",
