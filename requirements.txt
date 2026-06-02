@@ -9,7 +9,7 @@ python-dotenv
 pydantic
 cryptography
 aiofiles
-passlib[bcrypt]
+bcrypt
 python-jose[cryptography]
 slowapi
 python-multipart
