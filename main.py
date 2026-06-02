@@ -22,6 +22,13 @@ from core.engine import NODE_REGISTRY
 
 Base.metadata.create_all(bind=engine)
 
+# Add missing columns if upgrading from older schema
+from sqlalchemy import text
+with engine.connect() as _conn:
+    _conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR;"))
+    _conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;"))
+    _conn.commit()
+
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
