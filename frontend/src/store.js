@@ -5,14 +5,12 @@ import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || '';
 
-// Attach JWT token to every request
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('auth_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Logout on 401
 axios.interceptors.response.use(
   res => res,
   err => {
@@ -23,6 +21,13 @@ axios.interceptors.response.use(
     return Promise.reject(err);
   }
 );
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+const snapshot = (s) => ({ nodes: s.nodes, edges: s.edges });
+const pushHistory = (s) => ({
+  history: [...s.history.slice(-39), snapshot(s)],
+  historyFuture: [],
+});
 
 export const useStore = create(persist((set, get) => ({
   // Flow state
@@ -41,8 +46,6 @@ export const useStore = create(persist((set, get) => ({
   // Sidebar navigation
   activeSidebarPanel: 'nodes',
   sidebarExpanded: true,
-
-  // Legacy (keep for compat)
   sidebarOpen: true,
   configPanelNode: null,
 
@@ -50,36 +53,56 @@ export const useStore = create(persist((set, get) => ({
   workflows: [],
   workflowsLoading: false,
 
-  // API keys (stored server-side per user)
+  // API keys (server-side)
   apiKeys: {},
   apiKeysSaving: false,
   apiKeysLoaded: false,
 
-  // Flow handlers
-  onNodesChange: (changes) =>
-    set(s => ({ nodes: applyNodeChanges(changes, s.nodes) })),
+  // Undo / Redo history
+  history: [],
+  historyFuture: [],
 
-  onEdgesChange: (changes) =>
-    set(s => ({ edges: applyEdgeChanges(changes, s.edges) })),
+  // Copy / Paste clipboard
+  clipboard: [],
 
-  onConnect: (connection) =>
-    set(s => ({ edges: addEdge({ ...connection, animated: true }, s.edges) })),
+  // ─── Flow handlers ────────────────────────────────────────────────────────
+  onNodesChange: (changes) => {
+    const hasRemoval = changes.some(c => c.type === 'remove');
+    if (hasRemoval) set(s => pushHistory(s));
+    set(s => ({ nodes: applyNodeChanges(changes, s.nodes) }));
+  },
+
+  onEdgesChange: (changes) => {
+    const hasRemoval = changes.some(c => c.type === 'remove');
+    if (hasRemoval) set(s => pushHistory(s));
+    set(s => ({ edges: applyEdgeChanges(changes, s.edges) }));
+  },
+
+  onConnect: (connection) => set(s => ({
+    ...pushHistory(s),
+    edges: addEdge({ ...connection, animated: true }, s.edges),
+  })),
 
   setWorkflowName: (name) => set({ workflowName: name }),
 
-  // Sidebar panel navigation
+  // ─── Sidebar ──────────────────────────────────────────────────────────────
   setActiveSidebarPanel: (panel) => set(s => ({
     activeSidebarPanel: panel,
     sidebarExpanded: s.activeSidebarPanel === panel ? !s.sidebarExpanded : true,
   })),
 
-  // Add a node from the catalog
+  openConfig: (node) => set({ configPanelNode: node }),
+  closeConfig: () => set({ configPanelNode: null }),
+
+  // ─── Node CRUD ────────────────────────────────────────────────────────────
   addNode: (nodeType, nodeMeta) => {
+    set(s => pushHistory(s));
+
     const baseName = nodeType.split('.').pop().split('_')[0];
-    const existing = get().nodes.filter(n => n.data.nodeType === nodeType).length;
+    const s = get();
+    const existing = s.nodes.filter(n => n.data.nodeType === nodeType).length;
     const id = `${baseName}${existing + 1}`;
-    const count = get().nodes.length;
-    const lastNode = get().nodes[count - 1];
+    const lastNode = s.nodes[s.nodes.length - 1];
     const position = lastNode
       ? { x: lastNode.position.x + 240, y: lastNode.position.y }
       : { x: 80, y: 200 };
@@ -93,65 +116,130 @@ export const useStore = create(persist((set, get) => ({
       id,
       type: 'automationNode',
       position,
-      data: {
-        id,
-        nodeType,
-        label: nodeMeta.label,
-        icon: nodeMeta.icon,
-        color: nodeMeta.color,
-        config: defaultConfig,
-        fields: nodeMeta.fields,
-      },
+      data: { id, nodeType, label: nodeMeta.label, icon: nodeMeta.icon, color: nodeMeta.color, config: defaultConfig, fields: nodeMeta.fields },
     };
-    set(s => ({ nodes: [...s.nodes, newNode] }));
+    set(s2 => ({ nodes: [...s2.nodes, newNode] }));
     return id;
   },
 
-  // Update a node's config
-  updateNodeConfig: (nodeId, key, value) => {
-    set(s => ({
-      nodes: s.nodes.map(n =>
-        n.id === nodeId
-          ? { ...n, data: { ...n.data, config: { ...n.data.config, [key]: value } } }
-          : n
-      ),
-    }));
-  },
-
-  openConfig: (node) => set({ configPanelNode: node }),
-  closeConfig: () => set({ configPanelNode: null }),
+  updateNodeConfig: (nodeId, key, value) => set(s => ({
+    nodes: s.nodes.map(n =>
+      n.id === nodeId ? { ...n, data: { ...n.data, config: { ...n.data.config, [key]: value } } } : n
+    ),
+  })),
 
   deleteNode: (nodeId) => set(s => ({
+    ...pushHistory(s),
     nodes: s.nodes.filter(n => n.id !== nodeId),
     edges: s.edges.filter(e => e.source !== nodeId && e.target !== nodeId),
     configPanelNode: s.configPanelNode?.id === nodeId ? null : s.configPanelNode,
   })),
 
-  deleteSelectedNodes: () => set(s => {
-    const selectedIds = new Set(s.nodes.filter(n => n.selected).map(n => n.id));
-    if (selectedIds.size === 0) return {};
+  // Deletes all selected nodes AND edges
+  deleteSelected: () => set(s => {
+    const nodeIds = new Set(s.nodes.filter(n => n.selected).map(n => n.id));
+    const edgeIds = new Set(s.edges.filter(e => e.selected).map(e => e.id));
+    if (nodeIds.size === 0 && edgeIds.size === 0) return {};
     return {
-      nodes: s.nodes.filter(n => !selectedIds.has(n.id)),
-      edges: s.edges.filter(e => !selectedIds.has(e.source) && !selectedIds.has(e.target)),
-      configPanelNode: selectedIds.has(s.configPanelNode?.id) ? null : s.configPanelNode,
+      ...pushHistory(s),
+      nodes: s.nodes.filter(n => !nodeIds.has(n.id)),
+      edges: s.edges.filter(e => !edgeIds.has(e.id) && !nodeIds.has(e.source) && !nodeIds.has(e.target)),
+      configPanelNode: nodeIds.has(s.configPanelNode?.id) ? null : s.configPanelNode,
     };
   }),
 
-  // Build workflow definition from flow graph
+  selectAll: () => set(s => ({
+    nodes: s.nodes.map(n => ({ ...n, selected: true })),
+  })),
+
+  duplicateSelected: () => {
+    const s = get();
+    const selected = s.nodes.filter(n => n.selected);
+    if (selected.length === 0) return;
+    set(s2 => pushHistory(s2));
+
+    const newNodes = selected.map(n => {
+      const baseName = n.data.nodeType.split('.').pop().split('_')[0];
+      const count = get().nodes.filter(x => x.data.nodeType === n.data.nodeType).length;
+      const newId = `${baseName}${count + 1}`;
+      return {
+        ...n,
+        id: newId,
+        position: { x: n.position.x + 40, y: n.position.y + 40 },
+        selected: true,
+        data: { ...n.data, id: newId },
+      };
+    });
+
+    set(s2 => ({
+      nodes: [...s2.nodes.map(n => ({ ...n, selected: false })), ...newNodes],
+    }));
+  },
+
+  copySelected: () => {
+    const selected = get().nodes.filter(n => n.selected);
+    if (selected.length) set({ clipboard: selected });
+  },
+
+  pasteClipboard: () => {
+    const s = get();
+    if (s.clipboard.length === 0) return;
+    set(s2 => pushHistory(s2));
+
+    const newNodes = s.clipboard.map(n => {
+      const baseName = n.data.nodeType.split('.').pop().split('_')[0];
+      const count = get().nodes.filter(x => x.data.nodeType === n.data.nodeType).length;
+      const newId = `${baseName}${count + 1}`;
+      return {
+        ...n,
+        id: newId,
+        position: { x: n.position.x + 50, y: n.position.y + 50 },
+        selected: true,
+        data: { ...n.data, id: newId },
+      };
+    });
+
+    set(s2 => ({
+      nodes: [...s2.nodes.map(n => ({ ...n, selected: false })), ...newNodes],
+    }));
+  },
+
+  // ─── Undo / Redo ──────────────────────────────────────────────────────────
+  undo: () => {
+    const s = get();
+    if (s.history.length === 0) return;
+    const prev = s.history[s.history.length - 1];
+    set({
+      nodes: prev.nodes,
+      edges: prev.edges,
+      history: s.history.slice(0, -1),
+      historyFuture: [snapshot(s), ...s.historyFuture.slice(0, 39)],
+      configPanelNode: null,
+    });
+  },
+
+  redo: () => {
+    const s = get();
+    if (s.historyFuture.length === 0) return;
+    const next = s.historyFuture[0];
+    set({
+      nodes: next.nodes,
+      edges: next.edges,
+      history: [...s.history.slice(-39), snapshot(s)],
+      historyFuture: s.historyFuture.slice(1),
+      configPanelNode: null,
+    });
+  },
+
+  // ─── Build / Save / Run ───────────────────────────────────────────────────
   _buildDefinition: () => {
     const { nodes, edges } = get();
     return {
-      nodes: nodes.map(n => ({
-        id: n.id,
-        type: n.data.nodeType,
-        config: n.data.config,
-        position: n.position,
-      })),
+      nodes: nodes.map(n => ({ id: n.id, type: n.data.nodeType, config: n.data.config, position: n.position })),
       connections: edges.map(e => ({ from: e.source, to: e.target })),
     };
   },
 
-  // Save workflow to backend
   saveWorkflow: async () => {
     const { workflowId, workflowName, _buildDefinition } = get();
     set({ isSaving: true });
@@ -168,7 +256,6 @@ export const useStore = create(persist((set, get) => ({
     }
   },
 
-  // Run workflow
   runWorkflow: async (triggerData = {}) => {
     const { workflowId, saveWorkflow, fetchExecutions } = get();
     set({ isRunning: true, lastExecution: null });
@@ -193,7 +280,7 @@ export const useStore = create(persist((set, get) => ({
     }
   },
 
-  // Load workflows list
+  // ─── Workflows list ───────────────────────────────────────────────────────
   fetchWorkflows: async () => {
     set({ workflowsLoading: true });
     try {
@@ -204,20 +291,16 @@ export const useStore = create(persist((set, get) => ({
     }
   },
 
-  // Delete a workflow
   deleteWorkflow: async (id) => {
     await axios.delete(`${API}/workflows/${id}`);
     set(s => ({ workflows: s.workflows.filter(w => w.id !== id) }));
     if (get().workflowId === id) {
-      set({ nodes: [], edges: [], workflowId: null, workflowName: 'Untitled Workflow',
-            lastExecution: null, executions: [], configPanelNode: null });
+      set({ nodes: [], edges: [], workflowId: null, workflowName: 'Untitled Workflow', lastExecution: null, executions: [], configPanelNode: null });
     }
   },
 
-  // Reset editor for a new workflow
   newWorkflow: () => {
-    set({ nodes: [], edges: [], workflowId: null, workflowName: 'Untitled Workflow',
-          lastExecution: null, executions: [], configPanelNode: null });
+    set({ nodes: [], edges: [], workflowId: null, workflowName: 'Untitled Workflow', lastExecution: null, executions: [], configPanelNode: null, history: [], historyFuture: [] });
   },
 
   fetchExecutions: async () => {
@@ -227,39 +310,23 @@ export const useStore = create(persist((set, get) => ({
     set({ executions: res.data });
   },
 
-  // Load a workflow into the editor
   loadWorkflow: (wf) => {
     const nodes = (wf.definition?.nodes || []).map(n => ({
-      id: n.id,
-      type: 'automationNode',
-      position: n.position || { x: 100, y: 100 },
-      data: {
-        id: n.id,
-        nodeType: n.type,
-        label: n.label || n.type,
-        icon: n.icon || '⚙️',
-        color: n.color || '#64748b',
-        config: n.config || {},
-        fields: n.fields || [],
-      },
+      id: n.id, type: 'automationNode', position: n.position || { x: 100, y: 100 },
+      data: { id: n.id, nodeType: n.type, label: n.label || n.type, icon: n.icon || '⚙️', color: n.color || '#64748b', config: n.config || {}, fields: n.fields || [] },
     }));
     const edges = (wf.definition?.connections || []).map((c, i) => ({
-      id: `e${i}`,
-      source: c.from,
-      target: c.to,
-      animated: true,
+      id: `e${i}`, source: c.from, target: c.to, animated: true,
     }));
-    set({ nodes, edges, workflowId: wf.id, workflowName: wf.name, lastExecution: null });
+    set({ nodes, edges, workflowId: wf.id, workflowName: wf.name, lastExecution: null, history: [], historyFuture: [] });
   },
 
-  // API keys (stored server-side)
+  // ─── API keys ─────────────────────────────────────────────────────────────
   fetchApiKeys: async () => {
     try {
       const res = await axios.get(`${API}/auth/settings`);
       set({ apiKeys: res.data.api_keys || {}, apiKeysLoaded: true });
-    } catch {
-      set({ apiKeysLoaded: true });
-    }
+    } catch { set({ apiKeysLoaded: true }); }
   },
 
   saveApiKeys: async (keys) => {
@@ -267,9 +334,7 @@ export const useStore = create(persist((set, get) => ({
     try {
       await axios.put(`${API}/auth/settings`, { api_keys: keys });
       set({ apiKeys: keys });
-    } finally {
-      set({ apiKeysSaving: false });
-    }
+    } finally { set({ apiKeysSaving: false }); }
   },
 }), {
   name: 'automation-builder-state',

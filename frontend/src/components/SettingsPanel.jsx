@@ -63,6 +63,31 @@ const sectionLabel = {
 
 export default function SettingsPanel() {
   const [tab, setTab] = useState('general');
+
+  const HOTKEYS = [
+    { group: 'Workflow', items: [
+      { keys: ['Ctrl', 'S'],      label: 'Save workflow' },
+      { keys: ['Ctrl', '↵'],      label: 'Run workflow' },
+      { keys: ['Ctrl', 'N'],      label: 'New workflow' },
+    ]},
+    { group: 'Edit', items: [
+      { keys: ['Ctrl', 'Z'],      label: 'Undo' },
+      { keys: ['Ctrl', 'Y'],      label: 'Redo' },
+      { keys: ['Ctrl', 'A'],      label: 'Select all' },
+      { keys: ['Ctrl', 'C'],      label: 'Copy selected' },
+      { keys: ['Ctrl', 'V'],      label: 'Paste' },
+      { keys: ['Ctrl', 'D'],      label: 'Duplicate' },
+      { keys: ['Del'],            label: 'Delete selected' },
+    ]},
+    { group: 'View', items: [
+      { keys: ['Ctrl', '⇧', 'H'], label: 'Center / fit view' },
+      { keys: ['Scroll'],         label: 'Zoom in/out' },
+      { keys: ['Space', 'drag'],  label: 'Pan canvas' },
+    ]},
+    { group: 'Panel', items: [
+      { keys: ['Esc'],            label: 'Close config panel' },
+    ]},
+  ];
   const [prefs, setPrefs] = useState(loadPrefs);
   const [prefsSaved, setPrefsSaved] = useState(false);
 
@@ -95,7 +120,7 @@ export default function SettingsPanel() {
     }
   };
 
-  const tabBtn = (id, label) => ({
+  const tabBtn = (id) => ({
     flex: 1, background: tab === id ? '#ffffff0a' : 'transparent',
     border: 'none', borderBottom: `1px solid ${tab === id ? '#6366f1' : 'transparent'}`,
     color: tab === id ? '#e2e8f0' : '#475569',
@@ -108,8 +133,9 @@ export default function SettingsPanel() {
       <div style={{ padding: '13px 13px 0', borderBottom: '1px solid #ffffff0d', flexShrink: 0 }}>
         <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, letterSpacing: 0.3, marginBottom: 8 }}>Settings</div>
         <div style={{ display: 'flex', gap: 0 }}>
-          <button style={tabBtn('general', 'General')} onClick={() => setTab('general')}>General</button>
-          <button style={tabBtn('integrations', 'Integrations')} onClick={() => setTab('integrations')}>Integrations</button>
+          <button style={tabBtn('general')} onClick={() => setTab('general')}>General</button>
+          <button style={tabBtn('integrations')} onClick={() => setTab('integrations')}>Integrations</button>
+          <button style={tabBtn('hotkeys')} onClick={() => setTab('hotkeys')}>Hotkeys</button>
         </div>
       </div>
 
@@ -198,6 +224,42 @@ export default function SettingsPanel() {
           >
             {prefsSaved ? 'Preferences saved' : 'Save Preferences'}
           </button>
+        </div>
+      )}
+
+      {/* Hotkeys tab */}
+      {tab === 'hotkeys' && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 13px' }}>
+          {HOTKEYS.map(({ group, items }) => (
+            <div key={group} style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 9, color: '#334155', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                {group}
+              </div>
+              {items.map(({ keys, label }) => (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, gap: 8 }}>
+                  <span style={{ fontSize: 11, color: '#475569' }}>{label}</span>
+                  <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
+                    {keys.map((k, i) => (
+                      <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <kbd style={{
+                          background: '#0f0f1a', border: '1px solid #ffffff0d', borderRadius: 3,
+                          padding: '2px 6px', fontSize: 9, color: '#6366f1', fontFamily: 'monospace',
+                          letterSpacing: 0, lineHeight: 1.4, display: 'inline-block',
+                        }}>
+                          {k}
+                        </kbd>
+                        {i < keys.length - 1 && <span style={{ fontSize: 9, color: '#1e2030' }}>+</span>}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+          <div style={{ fontSize: 10, color: '#1e2030', paddingTop: 8, borderTop: '1px solid #ffffff06', lineHeight: 1.6 }}>
+            Shortcuts work when focus is on the canvas.<br />
+            Ctrl+S and Ctrl+↵ work everywhere.
+          </div>
         </div>
       )}
 

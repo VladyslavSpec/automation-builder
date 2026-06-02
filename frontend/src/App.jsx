@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -14,6 +15,7 @@ import ConfigPanel from './components/ConfigPanel';
 import ExecutionPanel from './components/ExecutionPanel';
 import AuthPage from './components/AuthPage';
 import DotBackground from './components/DotBackground';
+import FlowControls from './components/FlowControls';
 
 const API = import.meta.env.VITE_API_URL || '';
 const nodeTypes = { automationNode: AutomationNode };
@@ -62,46 +64,43 @@ function WorkflowEditor({ user, onLogout }) {
   const addNode = useStore(s => s.addNode);
   const saveWorkflow = useStore(s => s.saveWorkflow);
   const runWorkflow = useStore(s => s.runWorkflow);
-  const closeConfig = useStore(s => s.closeConfig);
   const isSaving = useStore(s => s.isSaving);
   const isRunning = useStore(s => s.isRunning);
   const workflowName = useStore(s => s.workflowName);
   const setWorkflowName = useStore(s => s.setWorkflowName);
   const configPanelNode = useStore(s => s.configPanelNode);
+  const closeConfig = useStore(s => s.closeConfig);
   const fetchWorkflows = useStore(s => s.fetchWorkflows);
+  const history = useStore(s => s.history);
+  const historyFuture = useStore(s => s.historyFuture);
 
   const reactFlowWrapper = useRef(null);
 
   useEffect(() => { fetchWorkflows(); }, []);
 
-  // Global hotkeys
+  // ─── Global Hotkeys ───────────────────────────────────────────────────────
   useEffect(() => {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
+      const ctrl = e.ctrlKey || e.metaKey;
 
-      // Ctrl+S → Save (always)
-      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        saveWorkflow();
-        return;
-      }
-      // Ctrl+Enter → Run (always)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        runWorkflow();
-        return;
-      }
-      // Escape → close config panel
-      if (e.key === 'Escape') {
-        useStore.getState().closeConfig();
-        return;
-      }
-      // Delete / Backspace → delete selected nodes (only when not in input)
-      if (!inInput && (e.key === 'Delete' || e.key === 'Backspace')) {
-        e.preventDefault();
-        useStore.getState().deleteSelectedNodes();
-      }
+      // Always-on shortcuts
+      if (ctrl && e.key === 's') { e.preventDefault(); saveWorkflow(); return; }
+      if (ctrl && e.key === 'Enter') { e.preventDefault(); runWorkflow(); return; }
+      if (e.key === 'Escape') { closeConfig(); return; }
+
+      // Shortcuts blocked when inside an input
+      if (inInput) return;
+
+      if (ctrl && !e.shiftKey && e.key === 'z') { e.preventDefault(); useStore.getState().undo(); return; }
+      if (ctrl && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) { e.preventDefault(); useStore.getState().redo(); return; }
+      if (ctrl && e.key === 'a') { e.preventDefault(); useStore.getState().selectAll(); return; }
+      if (ctrl && e.key === 'c') { e.preventDefault(); useStore.getState().copySelected(); return; }
+      if (ctrl && e.key === 'v') { e.preventDefault(); useStore.getState().pasteClipboard(); return; }
+      if (ctrl && e.key === 'd') { e.preventDefault(); useStore.getState().duplicateSelected(); return; }
+      if (ctrl && e.key === 'n') { e.preventDefault(); useStore.getState().newWorkflow(); return; }
+      if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); useStore.getState().deleteSelected(); return; }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -134,6 +133,16 @@ function WorkflowEditor({ user, onLogout }) {
     transition: 'opacity 0.1s',
   });
 
+  const HOTKEY_HINTS = [
+    ['Ctrl+S', 'Save'],
+    ['Ctrl+↵', 'Run'],
+    ['Ctrl+Z', 'Undo'],
+    ['Ctrl+D', 'Duplicate'],
+    ['Del', 'Delete'],
+    ['Ctrl+A', 'Select all'],
+    ['Ctrl+⇧H', 'Fit view'],
+  ];
+
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#0a0a12', color: '#e2e8f0', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Sidebar user={user} onLogout={onLogout} />
@@ -154,12 +163,32 @@ function WorkflowEditor({ user, onLogout }) {
             }}
           />
           <div style={{ flex: 1 }} />
-          <span style={{ fontSize: 10, color: '#2d3a4a', whiteSpace: 'nowrap', letterSpacing: 0.3 }}>
+          {/* Undo/Redo buttons */}
+          <button
+            onClick={() => useStore.getState().undo()}
+            disabled={history.length === 0}
+            title="Undo  (Ctrl+Z)"
+            style={{
+              background: 'none', border: 'none', color: history.length > 0 ? '#64748b' : '#1e2030',
+              cursor: history.length > 0 ? 'pointer' : 'default', fontSize: 14, padding: '2px 4px',
+            }}
+          >↩</button>
+          <button
+            onClick={() => useStore.getState().redo()}
+            disabled={historyFuture.length === 0}
+            title="Redo  (Ctrl+Y)"
+            style={{
+              background: 'none', border: 'none', color: historyFuture.length > 0 ? '#64748b' : '#1e2030',
+              cursor: historyFuture.length > 0 ? 'pointer' : 'default', fontSize: 14, padding: '2px 4px', marginRight: 4,
+            }}
+          >↪</button>
+          <span style={{ fontSize: 10, color: '#1e2a3a', whiteSpace: 'nowrap', letterSpacing: 0.3 }}>
             {nodes.length} nodes · {edges.length} edges
           </span>
           <button
             onClick={saveWorkflow}
             disabled={isSaving}
+            title="Save  (Ctrl+S)"
             style={{ ...topbarBtn(false), opacity: isSaving ? 0.4 : 1 }}
           >
             {isSaving ? 'Saving...' : 'Save'}
@@ -167,6 +196,7 @@ function WorkflowEditor({ user, onLogout }) {
           <button
             onClick={() => runWorkflow()}
             disabled={isRunning}
+            title="Run  (Ctrl+Enter)"
             style={{ ...topbarBtn(true), opacity: isRunning ? 0.5 : 1 }}
           >
             {isRunning ? 'Running...' : 'Run'}
@@ -175,17 +205,16 @@ function WorkflowEditor({ user, onLogout }) {
 
         {/* Hotkey hint bar */}
         <div style={{
-          height: 26, background: '#080810', borderBottom: '1px solid #ffffff08',
-          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 16, flexShrink: 0,
+          height: 24, background: '#080810', borderBottom: '1px solid #ffffff07',
+          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 14, flexShrink: 0,
+          overflowX: 'auto',
         }}>
-          {[
-            ['Ctrl+S', 'Save'],
-            ['Ctrl+↵', 'Run'],
-            ['Del', 'Delete node'],
-            ['Esc', 'Close panel'],
-          ].map(([key, label]) => (
-            <span key={key} style={{ fontSize: 10, color: '#2d3a4a', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <kbd style={{ background: '#0f0f1a', border: '1px solid #ffffff0d', borderRadius: 3, padding: '1px 5px', fontSize: 9, color: '#475569', fontFamily: 'monospace' }}>
+          {HOTKEY_HINTS.map(([key, label]) => (
+            <span key={key} style={{ fontSize: 10, color: '#253040', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+              <kbd style={{
+                background: '#0c0c18', border: '1px solid #ffffff08', borderRadius: 3,
+                padding: '0px 5px', fontSize: 9, color: '#3d4f62', fontFamily: 'monospace', letterSpacing: 0,
+              }}>
                 {key}
               </kbd>
               {label}
@@ -206,9 +235,10 @@ function WorkflowEditor({ user, onLogout }) {
             onDragOver={onDragOver}
             nodeTypes={nodeTypes}
             fitView
-            deleteKeyCode="Delete"
+            deleteKeyCode={null}
             style={{ background: 'transparent', position: 'relative', zIndex: 1 }}
           >
+            <FlowControls />
             <Controls
               style={{ background: '#0d0d1a', border: '1px solid #ffffff0d', borderRadius: 4 }}
               showInteractive={false}
