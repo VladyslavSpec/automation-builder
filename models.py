@@ -26,6 +26,7 @@ class User(Base):
     plan = Column(String, default="free")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    api_keys = Column(JSON, default=dict)
 
     workflows = relationship("Workflow", back_populates="user")
 

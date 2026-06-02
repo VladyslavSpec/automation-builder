@@ -29,6 +29,13 @@ with engine.connect() as _conn:
     _conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;"))
     _conn.commit()
 
+try:
+    with engine.connect() as _conn2:
+        _conn2.execute(text("ALTER TABLE users ADD COLUMN api_keys JSON;"))
+        _conn2.commit()
+except Exception:
+    pass  # Column already exists
+
 limiter = Limiter(key_func=get_remote_address)
 
 IS_PROD = bool(os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("DATABASE_URL", "").startswith("postgresql"))

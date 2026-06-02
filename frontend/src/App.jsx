@@ -11,7 +11,7 @@ import axios from 'axios';
 
 import { useStore } from './store';
 import AutomationNode from './components/AutomationNode';
-import NodeSidebar from './components/NodeSidebar';
+import Sidebar from './components/Sidebar';
 import ConfigPanel from './components/ConfigPanel';
 import ExecutionPanel from './components/ExecutionPanel';
 import AuthPage from './components/AuthPage';
@@ -23,7 +23,6 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Check existing token on mount
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (!token) { setAuthChecked(true); return; }
@@ -63,12 +62,17 @@ function WorkflowEditor({ user, onLogout }) {
   const onConnect = useStore(s => s.onConnect);
   const addNode = useStore(s => s.addNode);
   const saveWorkflow = useStore(s => s.saveWorkflow);
+  const runWorkflow = useStore(s => s.runWorkflow);
   const isSaving = useStore(s => s.isSaving);
+  const isRunning = useStore(s => s.isRunning);
   const workflowName = useStore(s => s.workflowName);
   const setWorkflowName = useStore(s => s.setWorkflowName);
   const configPanelNode = useStore(s => s.configPanelNode);
+  const fetchWorkflows = useStore(s => s.fetchWorkflows);
 
   const reactFlowWrapper = useRef(null);
+
+  useEffect(() => { fetchWorkflows(); }, []);
 
   const onDragOver = useCallback(e => {
     e.preventDefault();
@@ -85,29 +89,25 @@ function WorkflowEditor({ user, onLogout }) {
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#0f0f1a', color: '#f1f5f9', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <NodeSidebar />
+      <Sidebar user={user} onLogout={onLogout} />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Topbar */}
         <div style={{
           height: 48, background: '#13131f', borderBottom: '1px solid #ffffff10',
           display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12, flexShrink: 0,
         }}>
-          <span style={{ fontSize: 18 }}>⚡</span>
           <input
             value={workflowName}
             onChange={e => setWorkflowName(e.target.value)}
             style={{
               background: 'none', border: 'none', color: '#f1f5f9', fontSize: 14,
-              fontWeight: 600, outline: 'none', width: 220,
+              fontWeight: 600, outline: 'none', minWidth: 0, flex: 1, maxWidth: 260,
             }}
           />
           <div style={{ flex: 1 }} />
-          <span style={{ fontSize: 11, color: '#64748b' }}>
-            {nodes.length} nodes · {edges.length} connections
-          </span>
-          <span style={{ fontSize: 11, color: '#64748b', background: '#1e1e2e', padding: '4px 10px', borderRadius: 6 }}>
-            {user.email}
+          <span style={{ fontSize: 11, color: '#475569', whiteSpace: 'nowrap' }}>
+            {nodes.length} nodes · {edges.length} edges
           </span>
           <button
             onClick={saveWorkflow}
@@ -115,19 +115,21 @@ function WorkflowEditor({ user, onLogout }) {
             style={{
               background: '#1e1e2e', border: '1px solid #ffffff20', borderRadius: 6,
               color: isSaving ? '#64748b' : '#f1f5f9', padding: '5px 14px',
-              cursor: isSaving ? 'default' : 'pointer', fontSize: 12,
+              cursor: isSaving ? 'default' : 'pointer', fontSize: 12, whiteSpace: 'nowrap',
             }}
           >
             {isSaving ? 'Saving…' : '💾 Save'}
           </button>
           <button
-            onClick={onLogout}
+            onClick={() => runWorkflow()}
+            disabled={isRunning}
             style={{
-              background: 'none', border: '1px solid #ffffff15', borderRadius: 6,
-              color: '#64748b', padding: '5px 10px', cursor: 'pointer', fontSize: 12,
+              background: isRunning ? '#1e1e2e' : '#6366f1', border: 'none', borderRadius: 6,
+              color: isRunning ? '#64748b' : '#fff', padding: '5px 14px',
+              cursor: isRunning ? 'default' : 'pointer', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap',
             }}
           >
-            Logout
+            {isRunning ? '⟳ Running…' : '▶ Run'}
           </button>
         </div>
 

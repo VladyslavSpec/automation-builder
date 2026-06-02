@@ -72,4 +72,45 @@ def me(current_user: User = Depends(get_current_user)):
         "id": current_user.id,
         "email": current_user.email,
         "plan": current_user.plan,
+        "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
     }
+
+
+class SettingsUpdate(BaseModel):
+    api_keys: dict
+
+
+@router.get("/settings")
+def get_settings(current_user: User = Depends(get_current_user)):
+    return {"api_keys": current_user.api_keys or {}}
+
+
+@router.put("/settings")
+def update_settings(
+    body: SettingsUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    current_user.api_keys = body.api_keys
+    db.commit()
+    return {"saved": True}
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@router.put("/password")
+def change_password(
+    body: PasswordChange,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if not current_user.password_hash or not verify_password(body.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    if len(body.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    current_user.password_hash = hash_password(body.new_password)
+    db.commit()
+    return {"changed": True}

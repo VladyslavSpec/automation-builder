@@ -38,9 +38,22 @@ export const useStore = create(persist((set, get) => ({
   lastExecution: null,
   executions: [],
 
-  // Sidebar
+  // Sidebar navigation
+  activeSidebarPanel: 'nodes',
+  sidebarExpanded: true,
+
+  // Legacy (keep for compat)
   sidebarOpen: true,
   configPanelNode: null,
+
+  // Workflows list
+  workflows: [],
+  workflowsLoading: false,
+
+  // API keys (stored server-side per user)
+  apiKeys: {},
+  apiKeysSaving: false,
+  apiKeysLoaded: false,
 
   // Flow handlers
   onNodesChange: (changes) =>
@@ -54,9 +67,14 @@ export const useStore = create(persist((set, get) => ({
 
   setWorkflowName: (name) => set({ workflowName: name }),
 
+  // Sidebar panel navigation
+  setActiveSidebarPanel: (panel) => set(s => ({
+    activeSidebarPanel: panel,
+    sidebarExpanded: s.activeSidebarPanel === panel ? !s.sidebarExpanded : true,
+  })),
+
   // Add a node from the catalog
   addNode: (nodeType, nodeMeta) => {
-    // Short readable ID: e.g. "webhook1", "youtube1", "claude1", "telegram1"
     const baseName = nodeType.split('.').pop().split('_')[0];
     const existing = get().nodes.filter(n => n.data.nodeType === nodeType).length;
     const id = `${baseName}${existing + 1}`;
@@ -66,7 +84,6 @@ export const useStore = create(persist((set, get) => ({
       ? { x: lastNode.position.x + 240, y: lastNode.position.y }
       : { x: 80, y: 200 };
 
-    // Pre-fill config with placeholder values so templates work out of the box
     const defaultConfig = {};
     (nodeMeta.fields || []).forEach(f => {
       if (f.placeholder) defaultConfig[f.key] = f.placeholder;
@@ -145,7 +162,6 @@ export const useStore = create(persist((set, get) => ({
       const res = await axios.post(`${API}/workflows/${id}/run`, triggerData);
       const execId = res.data.execution_id;
 
-      // Poll until done
       let exec;
       for (let i = 0; i < 30; i++) {
         await new Promise(r => setTimeout(r, 1000));
@@ -162,10 +178,30 @@ export const useStore = create(persist((set, get) => ({
   },
 
   // Load workflows list
-  workflows: [],
   fetchWorkflows: async () => {
-    const res = await axios.get(`${API}/workflows/`);
-    set({ workflows: res.data });
+    set({ workflowsLoading: true });
+    try {
+      const res = await axios.get(`${API}/workflows/`);
+      set({ workflows: res.data });
+    } finally {
+      set({ workflowsLoading: false });
+    }
+  },
+
+  // Delete a workflow
+  deleteWorkflow: async (id) => {
+    await axios.delete(`${API}/workflows/${id}`);
+    set(s => ({ workflows: s.workflows.filter(w => w.id !== id) }));
+    if (get().workflowId === id) {
+      set({ nodes: [], edges: [], workflowId: null, workflowName: 'Untitled Workflow',
+            lastExecution: null, executions: [], configPanelNode: null });
+    }
+  },
+
+  // Reset editor for a new workflow
+  newWorkflow: () => {
+    set({ nodes: [], edges: [], workflowId: null, workflowName: 'Untitled Workflow',
+          lastExecution: null, executions: [], configPanelNode: null });
   },
 
   fetchExecutions: async () => {
@@ -198,6 +234,26 @@ export const useStore = create(persist((set, get) => ({
       animated: true,
     }));
     set({ nodes, edges, workflowId: wf.id, workflowName: wf.name, lastExecution: null });
+  },
+
+  // API keys (stored server-side)
+  fetchApiKeys: async () => {
+    try {
+      const res = await axios.get(`${API}/auth/settings`);
+      set({ apiKeys: res.data.api_keys || {}, apiKeysLoaded: true });
+    } catch {
+      set({ apiKeysLoaded: true });
+    }
+  },
+
+  saveApiKeys: async (keys) => {
+    set({ apiKeysSaving: true });
+    try {
+      await axios.put(`${API}/auth/settings`, { api_keys: keys });
+      set({ apiKeys: keys });
+    } finally {
+      set({ apiKeysSaving: false });
+    }
   },
 }), {
   name: 'automation-builder-state',
