@@ -23,7 +23,11 @@ class ExecutionContext:
             if source == "vars":
                 return str(self.variables.get(key, ""))
             if source == "env":
-                return str(os.getenv(key, ""))
+                # Only allow whitelisted env vars — never expose secrets
+                ALLOWED_ENV = {"APP_ENV", "APP_NAME"}
+                if key in ALLOWED_ENV:
+                    return str(os.getenv(key, ""))
+                return ""
             if source in self.node_outputs:
                 return str(self.node_outputs[source].get(key, ""))
             return match.group(0)

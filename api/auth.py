@@ -3,10 +3,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from database import get_db
 from models import User
 from core.auth import hash_password, verify_password, create_access_token, decode_token
+
+limiter = Limiter(key_func=get_remote_address)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -31,7 +35,8 @@ class RegisterRequest(BaseModel):
 
 
 @router.post("/register", status_code=201)
-def register(body: RegisterRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def register(request: Request, body: RegisterRequest, db: Session = Depends(get_db)):
     email = body.email.lower().strip()
     if not EMAIL_RE.match(email):
         raise HTTPException(status_code=400, detail="Invalid email format")
@@ -51,7 +56,8 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     email = form_data.username.lower().strip()
     user = db.query(User).filter_by(email=email, is_active=True).first()
     if not user or not user.password_hash or not verify_password(form_data.password, user.password_hash):
