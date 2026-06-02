@@ -1,0 +1,8 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0f0f1a; color: #f1f5f9; font-family: Inter, system-ui, sans-serif; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ffffff20; border-radius: 4px; }
+.react-flow__controls button { background: #1e1e2e !important; border-color: #ffffff15 !important; color: #f1f5f9 !important; }
+.react-flow__controls button:hover { background: #2e2e3e !important; }
+.react-flow__edge-path { stroke: #6366f1 !important; stroke-width: 2 !important; }
