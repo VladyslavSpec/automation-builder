@@ -5,6 +5,25 @@ import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || '';
 
+// Attach JWT token to every request
+axios.interceptors.request.use(config => {
+  const token = localStorage.getItem('auth_token');
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// Logout on 401
+axios.interceptors.response.use(
+  res => res,
+  err => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      window.location.reload();
+    }
+    return Promise.reject(err);
+  }
+);
+
 export const useStore = create(persist((set, get) => ({
   // Flow state
   nodes: [],

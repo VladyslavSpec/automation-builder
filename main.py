@@ -1,12 +1,15 @@
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 load_dotenv()
 
@@ -14,16 +17,21 @@ from database import engine, Base, get_db
 from models import Workflow, WorkflowExecution
 from api.workflows import router as workflows_router
 from api.executions import router as executions_router
-from core.nodes.base import BaseNode
+from api.auth import router as auth_router
 from core.engine import NODE_REGISTRY
 
 Base.metadata.create_all(bind=engine)
+
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="Automation Builder API",
     description="No-code workflow automation engine",
     version="0.1.0",
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,6 +40,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    return response
+
+
+app.include_router(auth_router)
 app.include_router(workflows_router)
 app.include_router(executions_router)
 
@@ -57,7 +78,6 @@ def root():
 
 @app.get("/node-types")
 def list_node_types():
-    """Returns all available node types with their categories."""
     types = []
     for type_key in NODE_REGISTRY:
         category, name = type_key.split(".", 1)
@@ -66,15 +86,14 @@ def list_node_types():
 
 
 @app.post("/webhook/{token}")
+@limiter.limit("30/minute")
 async def webhook_trigger(token: str, request: Request, db: Session = Depends(get_db)):
-    """Receives incoming webhooks and triggers matching workflows."""
     body = {}
     try:
         body = await request.json()
     except Exception:
         pass
 
-    # Find active workflow with a webhook trigger node matching this token
     workflows = db.query(Workflow).filter_by(is_active=True).all()
     triggered = []
 
@@ -106,7 +125,7 @@ async def webhook_trigger(token: str, request: Request, db: Session = Depends(ge
     return {"triggered": triggered}
 
 
-# Serve built frontend (production only — skip if dist not built yet)
+# Serve built frontend (production)
 if FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
 

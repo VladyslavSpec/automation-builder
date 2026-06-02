@@ -2,16 +2,24 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import WorkflowExecution, NodeExecution
+from models import WorkflowExecution, NodeExecution, Workflow, User
+from api.auth import get_current_user
 
 router = APIRouter(prefix="/executions", tags=["executions"])
 
 
 @router.get("/{execution_id}")
-def get_execution(execution_id: str, db: Session = Depends(get_db)):
+def get_execution(
+    execution_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     execution = db.query(WorkflowExecution).filter_by(id=execution_id).first()
     if not execution:
         raise HTTPException(status_code=404, detail="Execution not found")
+    workflow = db.query(Workflow).filter_by(id=execution.workflow_id, user_id=current_user.id).first()
+    if not workflow:
+        raise HTTPException(status_code=403, detail="Access denied")
     return {
         "id": execution.id,
         "workflow_id": execution.workflow_id,
@@ -24,7 +32,18 @@ def get_execution(execution_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/{execution_id}/nodes")
-def get_node_executions(execution_id: str, db: Session = Depends(get_db)):
+def get_node_executions(
+    execution_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    execution = db.query(WorkflowExecution).filter_by(id=execution_id).first()
+    if not execution:
+        raise HTTPException(status_code=404, detail="Execution not found")
+    workflow = db.query(Workflow).filter_by(id=execution.workflow_id, user_id=current_user.id).first()
+    if not workflow:
+        raise HTTPException(status_code=403, detail="Access denied")
+
     nodes = (
         db.query(NodeExecution)
         .filter_by(execution_id=execution_id)

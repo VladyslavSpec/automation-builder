@@ -3,24 +3,13 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone
-import uuid
 import os
 
 from database import get_db
 from models import Workflow, WorkflowExecution, User
+from api.auth import get_current_user
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
-
-DEV_USER_ID = "dev-user-1"
-
-
-def ensure_dev_user(db: Session):
-    user = db.query(User).filter_by(id=DEV_USER_ID).first()
-    if not user:
-        user = User(id=DEV_USER_ID, email="dev@local.com", plan="pro")
-        db.add(user)
-        db.commit()
-    return user
 
 
 class WorkflowCreate(BaseModel):
@@ -37,9 +26,11 @@ class WorkflowUpdate(BaseModel):
 
 
 @router.get("/")
-def list_workflows(db: Session = Depends(get_db)):
-    ensure_dev_user(db)
-    workflows = db.query(Workflow).filter_by(user_id=DEV_USER_ID).all()
+def list_workflows(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    workflows = db.query(Workflow).filter_by(user_id=current_user.id).all()
     return [
         {
             "id": w.id,
@@ -54,10 +45,13 @@ def list_workflows(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=201)
-def create_workflow(body: WorkflowCreate, db: Session = Depends(get_db)):
-    ensure_dev_user(db)
+def create_workflow(
+    body: WorkflowCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     workflow = Workflow(
-        user_id=DEV_USER_ID,
+        user_id=current_user.id,
         name=body.name,
         description=body.description,
         definition=body.definition,
@@ -69,16 +63,25 @@ def create_workflow(body: WorkflowCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{workflow_id}")
-def get_workflow(workflow_id: str, db: Session = Depends(get_db)):
-    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=DEV_USER_ID).first()
+def get_workflow(
+    workflow_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=current_user.id).first()
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return workflow
 
 
 @router.put("/{workflow_id}")
-def update_workflow(workflow_id: str, body: WorkflowUpdate, db: Session = Depends(get_db)):
-    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=DEV_USER_ID).first()
+def update_workflow(
+    workflow_id: str,
+    body: WorkflowUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=current_user.id).first()
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     if body.name is not None:
@@ -95,8 +98,12 @@ def update_workflow(workflow_id: str, body: WorkflowUpdate, db: Session = Depend
 
 
 @router.delete("/{workflow_id}", status_code=204)
-def delete_workflow(workflow_id: str, db: Session = Depends(get_db)):
-    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=DEV_USER_ID).first()
+def delete_workflow(
+    workflow_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=current_user.id).first()
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     db.delete(workflow)
@@ -104,8 +111,13 @@ def delete_workflow(workflow_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/{workflow_id}/run", status_code=202)
-async def run_workflow(workflow_id: str, trigger_data: dict = {}, db: Session = Depends(get_db)):
-    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=DEV_USER_ID).first()
+async def run_workflow(
+    workflow_id: str,
+    trigger_data: dict = {},
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=current_user.id).first()
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     if not workflow.is_active:
@@ -135,7 +147,15 @@ async def run_workflow(workflow_id: str, trigger_data: dict = {}, db: Session = 
 
 
 @router.get("/{workflow_id}/executions")
-def list_executions(workflow_id: str, db: Session = Depends(get_db)):
+def list_executions(
+    workflow_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    workflow = db.query(Workflow).filter_by(id=workflow_id, user_id=current_user.id).first()
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
     executions = (
         db.query(WorkflowExecution)
         .filter_by(workflow_id=workflow_id)
