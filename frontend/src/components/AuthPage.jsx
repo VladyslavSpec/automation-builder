@@ -127,7 +127,7 @@ export default function AuthPage({ onAuth }) {
               fontSize: 18, fontWeight: 800, textAlign: 'center',
               background: 'linear-gradient(135deg, #6366f1, #a78bfa)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            }}>FlowBuilder</div>
+            }}>Weavo</div>
             <div style={{ fontSize: 12, color: '#334155', textAlign: 'center', marginTop: 2 }}>
               {isRegister ? 'Create your free account' : 'Welcome back — log in to continue'}
             </div>
@@ -295,7 +295,7 @@ export default function AuthPage({ onAuth }) {
         display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'center',
         fontSize: 11.5, color: '#1e2a3a',
       }}>
-        <span>© 2026 FlowBuilder</span>
+        <span>© 2026 Weavo</span>
         <span style={{ opacity: 0.3 }}>·</span>
         <a href="/privacy.html" target="_blank" rel="noopener"
           style={{ color: '#2d3a4d', textDecoration: 'none' }}

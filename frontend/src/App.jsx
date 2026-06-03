@@ -174,7 +174,7 @@ function WorkflowEditor({ user, onLogout }) {
               <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="url(#top-g)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0', letterSpacing: -0.2, whiteSpace: 'nowrap' }}>
-              FlowBuilder
+              Weavo
             </span>
           </div>
 
