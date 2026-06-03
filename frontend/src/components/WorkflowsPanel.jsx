@@ -1,18 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../store';
-
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
+import { t, timeAgo } from '../i18n';
 
 export default function WorkflowsPanel() {
+  const lang = useStore(s => s.lang);
   const workflows = useStore(s => s.workflows);
   const workflowsLoading = useStore(s => s.workflowsLoading);
   const currentId = useStore(s => s.workflowId);
@@ -51,7 +42,7 @@ export default function WorkflowsPanel() {
       {/* Header */}
       <div style={{ padding: '14px 12px 10px', borderBottom: '1px solid #ffffff10', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 13 }}>My Workflows</span>
+          <span style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 13 }}>{t('wf.title', lang)}</span>
           <button
             onClick={handleNew}
             style={{
@@ -59,11 +50,11 @@ export default function WorkflowsPanel() {
               fontSize: 11, fontWeight: 600, padding: '3px 8px', cursor: 'pointer',
             }}
           >
-            + New
+            {t('wf.new', lang)}
           </button>
         </div>
         <input
-          placeholder="Search..."
+          placeholder={t('wf.search', lang)}
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={{
@@ -78,15 +69,15 @@ export default function WorkflowsPanel() {
       <div style={{ flex: 1, overflowY: 'auto', padding: '6px 0' }}>
         {workflowsLoading && (
           <div style={{ padding: '20px 12px', color: '#64748b', fontSize: 12, textAlign: 'center' }}>
-            Loading...
+            {t('wf.loading', lang)}
           </div>
         )}
 
         {!workflowsLoading && filtered.length === 0 && (
           <div style={{ padding: '24px 12px', color: '#475569', fontSize: 12, textAlign: 'center', lineHeight: 1.6 }}>
             {workflows.length === 0
-              ? <>No workflows yet.<br />Click <strong>+ New</strong> to create one.</>
-              : 'No results.'}
+              ? <>{t('wf.empty', lang)}<br />{t('wf.createNew', lang)}</>
+              : t('wf.noResults', lang)}
           </div>
         )}
 
@@ -94,19 +85,19 @@ export default function WorkflowsPanel() {
           <div key={wf.id}>
             {confirmDelete === wf.id ? (
               <div style={{ margin: '4px 8px', padding: '8px 10px', background: '#ef444415', borderRadius: 6, border: '1px solid #ef444430' }}>
-                <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 6 }}>Delete "{wf.name}"?</div>
+                <div style={{ fontSize: 11, color: '#ef4444', marginBottom: 6 }}>{t('wf.deleteQ', lang)} "{wf.name}"?</div>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <button
                     onClick={() => handleDelete(wf.id)}
                     style={{ flex: 1, background: '#ef4444', border: 'none', borderRadius: 4, color: '#fff', fontSize: 11, padding: '4px', cursor: 'pointer' }}
                   >
-                    Delete
+                    {t('wf.delete', lang)}
                   </button>
                   <button
                     onClick={() => setConfirmDelete(null)}
                     style={{ flex: 1, background: '#ffffff10', border: 'none', borderRadius: 4, color: '#94a3b8', fontSize: 11, padding: '4px', cursor: 'pointer' }}
                   >
-                    Cancel
+                    {t('wf.cancel', lang)}
                   </button>
                 </div>
               </div>
@@ -135,7 +126,7 @@ export default function WorkflowsPanel() {
                   </button>
                 </div>
                 <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>
-                  {timeAgo(wf.updated_at || wf.created_at)}
+                  {timeAgo(wf.updated_at || wf.created_at, lang)}
                 </div>
               </div>
             )}

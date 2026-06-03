@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import axios from 'axios';
+import { getLang } from './i18n';
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -30,6 +31,10 @@ const pushHistory = (s) => ({
 });
 
 export const useStore = create(persist((set, get) => ({
+  // Language (reactive, initialized from ab_preferences)
+  lang: getLang(),
+  setLang: (lang) => set({ lang }),
+
   // Flow state
   nodes: [],
   edges: [],

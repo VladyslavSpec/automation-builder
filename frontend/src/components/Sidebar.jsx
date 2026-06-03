@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../store';
+import { t } from '../i18n';
 import NodeSidebarPanel from './NodeSidebarPanel';
 import WorkflowsPanel from './WorkflowsPanel';
 import AccountPanel from './AccountPanel';
@@ -51,22 +52,15 @@ const Icons = {
   ),
 };
 
-const TOP_NAV = [
-  { id: 'nodes',     label: 'Nodes',     icon: Icons.nodes },
-  { id: 'workflows', label: 'Workflows', icon: Icons.workflows },
-  { id: 'docs',      label: 'Docs',      icon: Icons.docs },
-];
-
-const BOTTOM_NAV = [
-  { id: 'plans',    label: 'Plans',    icon: Icons.plans },
-  { id: 'settings', label: 'Settings', icon: Icons.settings },
-  { id: 'account',  label: 'Account',  icon: null }, // uses avatar
-];
+const TOP_NAV_IDS    = ['nodes', 'workflows', 'docs'];
+const BOTTOM_NAV_IDS = ['plans', 'settings', 'account'];
+const NAV_ICONS = { nodes: Icons.nodes, workflows: Icons.workflows, docs: Icons.docs, plans: Icons.plans, settings: Icons.settings };
 
 export default function Sidebar({ user, onLogout }) {
   const active = useStore(s => s.activeSidebarPanel);
   const expanded = useStore(s => s.sidebarExpanded);
   const setActive = useStore(s => s.setActiveSidebarPanel);
+  const lang = useStore(s => s.lang);
   const [tooltip, setTooltip] = useState(null);
 
   const initial = (user?.email || '?')[0].toUpperCase();
@@ -118,7 +112,7 @@ export default function Sidebar({ user, onLogout }) {
           padding: '4px 9px', fontSize: 11, color: '#cbd5e1', whiteSpace: 'nowrap',
           pointerEvents: 'none', zIndex: 999, letterSpacing: 0.2,
         }}>
-          {label === 'Account' ? (user?.email || 'Account') : label}
+          {label}
         </div>
       )}
     </div>
@@ -138,14 +132,14 @@ export default function Sidebar({ user, onLogout }) {
         zIndex: 10,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 4 }}>
-          {TOP_NAV.map(item => (
-            <NavBtn key={item.id} {...item} />
+          {TOP_NAV_IDS.map(id => (
+            <NavBtn key={id} id={id} label={t(`nav.${id}`, lang)} icon={NAV_ICONS[id]} />
           ))}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 10 }}>
-          {BOTTOM_NAV.map(item => (
-            <NavBtn key={item.id} {...item}>
-              {item.id === 'account' ? (
+          {BOTTOM_NAV_IDS.map(id => (
+            <NavBtn key={id} id={id} label={id === 'account' ? (user?.email || t('nav.account', lang)) : t(`nav.${id}`, lang)} icon={NAV_ICONS[id]}>
+              {id === 'account' ? (
                 <div style={{
                   width: 25, height: 25, borderRadius: '50%',
                   background: active === 'account' ? '#6366f1' : '#1e2a3a',

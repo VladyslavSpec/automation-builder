@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useStore } from '../store';
+import { t } from '../i18n';
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -63,29 +65,31 @@ const sectionLabel = {
 
 export default function SettingsPanel() {
   const [tab, setTab] = useState('general');
+  const lang = useStore(s => s.lang);
+  const setLang = useStore(s => s.setLang);
 
   const HOTKEYS = [
-    { group: 'Workflow', items: [
-      { keys: ['Ctrl', 'S'],      label: 'Save workflow' },
-      { keys: ['Ctrl', '↵'],      label: 'Run workflow' },
-      { keys: ['Ctrl', 'N'],      label: 'New workflow' },
+    { group: t('hk.group.workflow', lang), items: [
+      { keys: ['Ctrl', 'S'],      label: t('hk.save', lang) },
+      { keys: ['Ctrl', '↵'],      label: t('hk.run', lang) },
+      { keys: ['Ctrl', 'N'],      label: t('hk.new', lang) },
     ]},
-    { group: 'Edit', items: [
-      { keys: ['Ctrl', 'Z'],      label: 'Undo' },
-      { keys: ['Ctrl', 'Y'],      label: 'Redo' },
-      { keys: ['Ctrl', 'A'],      label: 'Select all' },
-      { keys: ['Ctrl', 'C'],      label: 'Copy selected' },
-      { keys: ['Ctrl', 'V'],      label: 'Paste' },
-      { keys: ['Ctrl', 'D'],      label: 'Duplicate' },
-      { keys: ['Del'],            label: 'Delete selected' },
+    { group: t('hk.group.edit', lang), items: [
+      { keys: ['Ctrl', 'Z'],      label: t('hk.undo', lang) },
+      { keys: ['Ctrl', 'Y'],      label: t('hk.redo', lang) },
+      { keys: ['Ctrl', 'A'],      label: t('hk.selectAll', lang) },
+      { keys: ['Ctrl', 'C'],      label: t('hk.copy', lang) },
+      { keys: ['Ctrl', 'V'],      label: t('hk.paste', lang) },
+      { keys: ['Ctrl', 'D'],      label: t('hk.duplicate', lang) },
+      { keys: ['Del'],            label: t('hk.delete', lang) },
     ]},
-    { group: 'View', items: [
-      { keys: ['Ctrl', '⇧', 'H'], label: 'Center / fit view' },
-      { keys: ['Scroll'],         label: 'Zoom in/out' },
-      { keys: ['Space', 'drag'],  label: 'Pan canvas' },
+    { group: t('hk.group.view', lang), items: [
+      { keys: ['Ctrl', '⇧', 'H'], label: t('hk.center', lang) },
+      { keys: ['Scroll'],         label: t('hk.scroll', lang) },
+      { keys: ['Space', 'drag'],  label: t('hk.pan', lang) },
     ]},
-    { group: 'Panel', items: [
-      { keys: ['Esc'],            label: 'Close config panel' },
+    { group: t('hk.group.panel', lang), items: [
+      { keys: ['Esc'],            label: t('hk.close', lang) },
     ]},
   ];
   const [prefs, setPrefs] = useState(loadPrefs);
@@ -105,6 +109,7 @@ export default function SettingsPanel() {
 
   const savePrefs = () => {
     localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    setLang(prefs.language);
     setPrefsSaved(true);
     setTimeout(() => setPrefsSaved(false), 2000);
   };
@@ -131,11 +136,11 @@ export default function SettingsPanel() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <div style={{ padding: '13px 13px 0', borderBottom: '1px solid #ffffff0d', flexShrink: 0 }}>
-        <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, letterSpacing: 0.3, marginBottom: 8 }}>Settings</div>
+        <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, letterSpacing: 0.3, marginBottom: 8 }}>{t('settings.title', lang)}</div>
         <div style={{ display: 'flex', gap: 0 }}>
-          <button style={tabBtn('general')} onClick={() => setTab('general')}>General</button>
-          <button style={tabBtn('integrations')} onClick={() => setTab('integrations')}>Integrations</button>
-          <button style={tabBtn('hotkeys')} onClick={() => setTab('hotkeys')}>Hotkeys</button>
+          <button style={tabBtn('general')}      onClick={() => setTab('general')}>{t('settings.general', lang)}</button>
+          <button style={tabBtn('integrations')} onClick={() => setTab('integrations')}>{t('settings.integrations', lang)}</button>
+          <button style={tabBtn('hotkeys')}      onClick={() => setTab('hotkeys')}>{t('settings.hotkeys', lang)}</button>
         </div>
       </div>
 
@@ -143,7 +148,7 @@ export default function SettingsPanel() {
       {tab === 'general' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 13px' }}>
           <div style={{ marginBottom: 14 }}>
-            <div style={sectionLabel}>Language</div>
+            <div style={sectionLabel}>{t('settings.language', lang)}</div>
             <select
               value={prefs.language}
               onChange={e => setPrefs(p => ({ ...p, language: e.target.value }))}
@@ -151,24 +156,21 @@ export default function SettingsPanel() {
             >
               {LANGUAGES.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
             </select>
-            <div style={{ fontSize: 10, color: '#334155', marginTop: 4 }}>
-              Full translation coming soon
-            </div>
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={sectionLabel}>Timezone</div>
+            <div style={sectionLabel}>{t('settings.timezone', lang)}</div>
             <select
               value={prefs.timezone}
               onChange={e => setPrefs(p => ({ ...p, timezone: e.target.value }))}
               style={selectStyle}
             >
-              {TIMEZONES.map(t => <option key={t} value={t}>{t}</option>)}
+              {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
             </select>
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={sectionLabel}>Date Format</div>
+            <div style={sectionLabel}>{t('settings.dateFormat', lang)}</div>
             <select
               value={prefs.dateFormat}
               onChange={e => setPrefs(p => ({ ...p, dateFormat: e.target.value }))}
@@ -179,7 +181,7 @@ export default function SettingsPanel() {
           </div>
 
           <div style={{ marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid #ffffff08' }}>
-            <div style={sectionLabel}>Interface</div>
+            <div style={sectionLabel}>{t('settings.interface', lang)}</div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
               <div
                 onClick={() => setPrefs(p => ({ ...p, compactMode: !p.compactMode }))}
@@ -197,19 +199,19 @@ export default function SettingsPanel() {
                   transition: 'left 0.15s',
                 }} />
               </div>
-              <span style={{ fontSize: 11, color: '#94a3b8' }}>Compact mode</span>
+              <span style={{ fontSize: 11, color: '#94a3b8' }}>{t('settings.compact', lang)}</span>
             </label>
           </div>
 
           <div style={{ marginBottom: 14 }}>
-            <div style={sectionLabel}>Theme</div>
+            <div style={sectionLabel}>{t('settings.theme', lang)}</div>
             <div style={{
               background: '#0f0f1a', border: '1px solid #ffffff12', borderRadius: 4,
               padding: '7px 10px', fontSize: 11, color: '#475569', display: 'flex',
               alignItems: 'center', justifyContent: 'space-between',
             }}>
-              <span>Dark</span>
-              <span style={{ fontSize: 10, color: '#334155' }}>Only option</span>
+              <span>{t('settings.dark', lang)}</span>
+              <span style={{ fontSize: 10, color: '#334155' }}>{t('settings.themeOnly', lang)}</span>
             </div>
           </div>
 
@@ -222,7 +224,7 @@ export default function SettingsPanel() {
               fontSize: 11, padding: '7px', cursor: 'pointer', transition: 'all 0.15s',
             }}
           >
-            {prefsSaved ? 'Preferences saved' : 'Save Preferences'}
+            {prefsSaved ? t('settings.saved', lang) : t('settings.save', lang)}
           </button>
         </div>
       )}
@@ -256,9 +258,8 @@ export default function SettingsPanel() {
               ))}
             </div>
           ))}
-          <div style={{ fontSize: 10, color: '#1e2030', paddingTop: 8, borderTop: '1px solid #ffffff06', lineHeight: 1.6 }}>
-            Shortcuts work when focus is on the canvas.<br />
-            Ctrl+S and Ctrl+↵ work everywhere.
+          <div style={{ fontSize: 10, color: '#334155', paddingTop: 8, borderTop: '1px solid #ffffff06', lineHeight: 1.6 }}>
+            {t('hk.note', lang)}
           </div>
         </div>
       )}
@@ -267,7 +268,7 @@ export default function SettingsPanel() {
       {tab === 'integrations' && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 13px' }}>
           {!apiLoaded && (
-            <div style={{ fontSize: 11, color: '#334155', textAlign: 'center', padding: 16 }}>Loading...</div>
+            <div style={{ fontSize: 11, color: '#334155', textAlign: 'center', padding: 16 }}>{t('settings.loading', lang)}</div>
           )}
 
           {apiLoaded && API_KEY_FIELDS.map(field => (
@@ -308,7 +309,8 @@ export default function SettingsPanel() {
           {apiLoaded && (
             <>
               <div style={{ fontSize: 10, color: '#334155', marginBottom: 12, lineHeight: 1.5 }}>
-                Use in nodes as <code style={{ background: '#ffffff08', padding: '1px 4px', borderRadius: 2, fontFamily: 'monospace' }}>{'{{env.KEY_NAME}}'}</code>
+                {t('settings.envHint', lang)}{' '}
+                <code style={{ background: '#ffffff08', padding: '1px 4px', borderRadius: 2, fontFamily: 'monospace' }}>{'{{env.KEY_NAME}}'}</code>
               </div>
               <button
                 onClick={saveApiKeys}
@@ -321,7 +323,7 @@ export default function SettingsPanel() {
                   opacity: apiSaving ? 0.6 : 1, transition: 'all 0.15s',
                 }}
               >
-                {apiSaving ? 'Saving...' : apiSaved ? 'Keys saved' : 'Save Keys'}
+                {apiSaving ? t('settings.saving', lang) : apiSaved ? t('settings.keysSaved', lang) : t('settings.saveKeys', lang)}
               </button>
             </>
           )}

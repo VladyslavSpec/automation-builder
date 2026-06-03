@@ -57,7 +57,7 @@ export default function DotBackground() {
 
         const curDist = Math.hypot(d.x - mx, d.y - my);
         const proximity = curDist < REPEL_RADIUS ? 1 - curDist / REPEL_RADIUS : 0;
-        const alpha = 0.06 + proximity * 0.44;
+        const alpha = 0.11 + proximity * 0.50;
 
         ctx.beginPath();
         ctx.arc(d.x, d.y, DOT_R, 0, Math.PI * 2);

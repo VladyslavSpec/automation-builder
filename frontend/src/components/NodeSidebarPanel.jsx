@@ -2,6 +2,7 @@ import { NODE_CATALOG } from '../nodeTypes';
 import { useStore } from '../store';
 import { NodeIcon } from '../NodeIcons';
 import { useState } from 'react';
+import { t } from '../i18n';
 
 const CATEGORY_ICONS = {
   'Triggers': { color: '#6366f1', dot: '#6366f1' },
@@ -16,6 +17,7 @@ const CATEGORY_ICONS = {
 
 export default function NodeSidebarPanel() {
   const addNode = useStore(s => s.addNode);
+  const lang = useStore(s => s.lang);
   const [search, setSearch] = useState('');
 
   const filtered = NODE_CATALOG.map(cat => ({
@@ -33,7 +35,7 @@ export default function NodeSidebarPanel() {
         <div style={{
           fontSize: 10, fontWeight: 700, color: '#475569',
           letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 8,
-        }}>Node Library</div>
+        }}>{t('nodes.library', lang)}</div>
 
         {/* Search */}
         <div style={{ position: 'relative' }}>
@@ -46,7 +48,7 @@ export default function NodeSidebarPanel() {
             <line x1="10.5" y1="10.5" x2="14" y2="14"/>
           </svg>
           <input
-            placeholder="Search nodes…"
+            placeholder={t('nodes.search', lang)}
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{

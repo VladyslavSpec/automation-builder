@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useStore } from '../store';
+import { t } from '../i18n';
 
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -10,12 +12,14 @@ const PLAN_META = {
   agency: { label: 'Agency', color: '#d97706' },
 };
 
-function formatDate(iso) {
+const LOCALE_MAP = { en: 'en-US', ru: 'ru-RU', es: 'es-ES', de: 'de-DE' };
+
+function formatDate(iso, lang = 'en') {
   if (!iso) return '';
-  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  return new Date(iso).toLocaleDateString(LOCALE_MAP[lang] || 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-function UsageBar({ used, max, label }) {
+function UsageBar({ used, max, label, unlimited = 'Unlimited' }) {
   const pct = max ? Math.min(100, (used / max) * 100) : 0;
   const warn = max && pct > 80;
   return (
@@ -38,7 +42,7 @@ function UsageBar({ used, max, label }) {
           <div style={{ height: '100%', width: '100%', background: '#6366f130', borderRadius: 2 }} />
         )}
       </div>
-      {!max && <div style={{ fontSize: 10, color: '#334155', marginTop: 2 }}>Unlimited</div>}
+      {!max && <div style={{ fontSize: 10, color: '#334155', marginTop: 2 }}>{unlimited}</div>}
     </div>
   );
 }
@@ -50,6 +54,7 @@ const inputStyle = {
 };
 
 export default function AccountPanel({ user, onLogout }) {
+  const lang = useStore(s => s.lang);
   const [name, setName] = useState(user?.name || '');
   const [nameSaving, setNameSaving] = useState(false);
   const [nameMsg, setNameMsg] = useState(null);
@@ -74,9 +79,9 @@ export default function AccountPanel({ user, onLogout }) {
     setNameMsg(null);
     try {
       await axios.patch(`${API}/auth/profile`, { name });
-      setNameMsg({ ok: true, text: 'Saved' });
+      setNameMsg({ ok: true, text: t('acc.saved', lang) });
     } catch {
-      setNameMsg({ ok: false, text: 'Failed' });
+      setNameMsg({ ok: false, text: t('acc.failed', lang) });
     } finally {
       setNameSaving(false);
       setTimeout(() => setNameMsg(null), 2000);
@@ -89,10 +94,10 @@ export default function AccountPanel({ user, onLogout }) {
     setPwMsg(null);
     try {
       await axios.put(`${API}/auth/password`, { current_password: currentPw, new_password: newPw });
-      setPwMsg({ ok: true, text: 'Password updated.' });
+      setPwMsg({ ok: true, text: t('acc.pwUpdated', lang) });
       setCurrentPw(''); setNewPw('');
     } catch (err) {
-      setPwMsg({ ok: false, text: err.response?.data?.detail || 'Failed.' });
+      setPwMsg({ ok: false, text: err.response?.data?.detail || t('acc.failed', lang) });
     } finally {
       setPwSaving(false);
     }
@@ -117,7 +122,7 @@ export default function AccountPanel({ user, onLogout }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <div style={{ padding: '13px 13px 10px', borderBottom: '1px solid #ffffff0d', flexShrink: 0 }}>
-        <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, letterSpacing: 0.3 }}>Account</div>
+        <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, letterSpacing: 0.3 }}>{t('acc.title', lang)}</div>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '14px 13px' }}>
@@ -155,27 +160,29 @@ export default function AccountPanel({ user, onLogout }) {
         {/* Plan usage */}
         {usage && (
           <div style={{ marginBottom: 18, paddingBottom: 16, borderBottom: '1px solid #ffffff08' }}>
-            <div style={sectionLabel}>This month</div>
+            <div style={sectionLabel}>{t('acc.thisMonth', lang)}</div>
             <UsageBar
-              label="Executions"
+              label={t('acc.executions', lang)}
               used={usage.executions_this_month}
               max={usage.limits?.runs}
+              unlimited={t('acc.unlimited', lang)}
             />
             <UsageBar
-              label="Workflows"
+              label={t('acc.workflows', lang)}
               used={usage.workflows_count}
               max={usage.limits?.workflows}
+              unlimited={t('acc.unlimited', lang)}
             />
           </div>
         )}
 
         {/* Name */}
         <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #ffffff08' }}>
-          <div style={sectionLabel}>Display Name</div>
+          <div style={sectionLabel}>{t('acc.displayName', lang)}</div>
           <input
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="Your name"
+            placeholder={t('acc.yourName', lang)}
             style={inputStyle}
           />
           {nameMsg && <div style={{ ...msgStyle(nameMsg.ok), marginTop: 6, marginBottom: 0 }}>{nameMsg.text}</div>}
@@ -188,31 +195,31 @@ export default function AccountPanel({ user, onLogout }) {
               cursor: nameSaving ? 'default' : 'pointer', opacity: nameSaving ? 0.6 : 1,
             }}
           >
-            {nameSaving ? 'Saving...' : 'Save Name'}
+            {nameSaving ? t('acc.saving', lang) : t('acc.saveName', lang)}
           </button>
         </div>
 
         {/* Email (read-only) */}
         <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #ffffff08' }}>
-          <div style={sectionLabel}>Email</div>
+          <div style={sectionLabel}>{t('acc.email', lang)}</div>
           <input value={user?.email || ''} readOnly style={{ ...inputStyle, color: '#475569', cursor: 'default' }} />
           {user?.created_at && (
             <div style={{ fontSize: 10, color: '#334155', marginTop: 5 }}>
-              Member since {formatDate(user.created_at)}
+              {t('acc.memberSince', lang)} {formatDate(user.created_at, lang)}
             </div>
           )}
         </div>
 
         {/* Change password */}
         <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #ffffff08' }}>
-          <div style={sectionLabel}>Change Password</div>
+          <div style={sectionLabel}>{t('acc.changePassword', lang)}</div>
           <input
-            type="password" placeholder="Current password" value={currentPw}
+            type="password" placeholder={t('acc.currentPw', lang)} value={currentPw}
             onChange={e => setCurrentPw(e.target.value)}
             style={{ ...inputStyle, marginBottom: 7 }}
           />
           <input
-            type="password" placeholder="New password (min. 8)" value={newPw}
+            type="password" placeholder={t('acc.newPw', lang)} value={newPw}
             onChange={e => setNewPw(e.target.value)}
             style={inputStyle}
           />
@@ -227,7 +234,7 @@ export default function AccountPanel({ user, onLogout }) {
               opacity: pwSaving || !currentPw || !newPw ? 0.4 : 1,
             }}
           >
-            {pwSaving ? 'Updating...' : 'Update Password'}
+            {pwSaving ? t('acc.updating', lang) : t('acc.updatePw', lang)}
           </button>
         </div>
 
@@ -242,7 +249,7 @@ export default function AccountPanel({ user, onLogout }) {
           onMouseEnter={e => e.currentTarget.style.background = '#ef444410'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
         >
-          Sign out
+          {t('acc.signOut', lang)}
         </button>
       </div>
     </div>

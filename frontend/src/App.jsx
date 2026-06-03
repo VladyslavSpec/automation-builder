@@ -9,6 +9,7 @@ import '@xyflow/react/dist/style.css';
 import axios from 'axios';
 
 import { useStore } from './store';
+import { t } from './i18n';
 import AutomationNode from './components/AutomationNode';
 import Sidebar from './components/Sidebar';
 import ConfigPanel from './components/ConfigPanel';
@@ -56,6 +57,7 @@ export default function App() {
 }
 
 function WorkflowEditor({ user, onLogout }) {
+  const lang = useStore(s => s.lang);
   const nodes = useStore(s => s.nodes);
   const edges = useStore(s => s.edges);
   const onNodesChange = useStore(s => s.onNodesChange);
@@ -145,14 +147,14 @@ function WorkflowEditor({ user, onLogout }) {
   ];
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#0a0a12', color: '#e2e8f0', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ display: 'flex', height: '100vh', background: '#0c0c1c', color: '#e2e8f0', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Sidebar user={user} onLogout={onLogout} />
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Topbar */}
         <div style={{
-          height: 44, background: '#0a0a14',
-          borderBottom: '1px solid #ffffff0a',
+          height: 44, background: '#0e0e1e',
+          borderBottom: '1px solid #ffffff12',
           display: 'flex', alignItems: 'center', padding: '0 12px', gap: 8, flexShrink: 0,
         }}>
           {/* Logo */}
@@ -239,7 +241,7 @@ function WorkflowEditor({ user, onLogout }) {
             onMouseEnter={e => { if (!isSaving) { e.currentTarget.style.borderColor = '#ffffff25'; e.currentTarget.style.color = '#94a3b8'; } }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#ffffff12'; e.currentTarget.style.color = '#64748b'; }}
           >
-            {isSaving ? 'Saving…' : 'Save'}
+            {isSaving ? t('app.saving', lang) : t('app.save', lang)}
           </button>
 
           {/* Run */}
@@ -264,12 +266,12 @@ function WorkflowEditor({ user, onLogout }) {
                   border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: '#fff',
                   borderRadius: '50%', animation: 'spin 0.7s linear infinite',
                 }}/>
-                Running
+                {t('app.running', lang)}
               </>
             ) : (
               <>
                 <svg width="8" height="9" viewBox="0 0 8 9" fill="white"><path d="M1 1l6 3.5L1 8V1Z"/></svg>
-                Run
+                {t('app.run', lang)}
               </>
             )}
           </button>
@@ -277,7 +279,7 @@ function WorkflowEditor({ user, onLogout }) {
 
         {/* Hotkey hint bar */}
         <div style={{
-          height: 24, background: '#080810', borderBottom: '1px solid #ffffff07',
+          height: 24, background: '#0c0c1a', borderBottom: '1px solid #ffffff0a',
           display: 'flex', alignItems: 'center', padding: '0 14px', gap: 14, flexShrink: 0,
           overflowX: 'auto',
         }}>
@@ -295,21 +297,28 @@ function WorkflowEditor({ user, onLogout }) {
         </div>
 
         {/* Canvas */}
-        <div ref={reactFlowWrapper} style={{ flex: 1, position: 'relative', background: '#07070f' }}>
-          {/* Ambient glows */}
+        <div ref={reactFlowWrapper} style={{ flex: 1, position: 'relative', background: '#0b0b1c' }}>
+          {/* Ambient glows — brighter */}
           <div style={{
             position: 'absolute', top: '15%', left: '25%',
-            width: 500, height: 500, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)',
-            filter: 'blur(70px)', pointerEvents: 'none', zIndex: 0,
+            width: 600, height: 600, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%)',
+            filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0,
             animation: 'blobFloat1 22s ease-in-out infinite',
           }} />
           <div style={{
             position: 'absolute', bottom: '5%', right: '15%',
-            width: 400, height: 400, borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)',
-            filter: 'blur(70px)', pointerEvents: 'none', zIndex: 0,
+            width: 500, height: 500, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.11) 0%, transparent 70%)',
+            filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0,
             animation: 'blobFloat2 28s ease-in-out infinite',
+          }} />
+          <div style={{
+            position: 'absolute', top: '60%', left: '5%',
+            width: 350, height: 350, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 70%)',
+            filter: 'blur(70px)', pointerEvents: 'none', zIndex: 0,
+            animation: 'blobFloat3 35s ease-in-out infinite',
           }} />
           <DotBackground />
           <ReactFlow
@@ -354,10 +363,10 @@ function WorkflowEditor({ user, onLogout }) {
                   </svg>
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0', marginBottom: 8, letterSpacing: -0.3 }}>
-                  Start building your workflow
+                  {t('canvas.start', lang)}
                 </div>
                 <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, marginBottom: 24 }}>
-                  Drag nodes from the left panel onto the canvas,<br/>or load a sample workflow to explore.
+                  {t('canvas.hint', lang)}
                 </div>
                 <button
                   onClick={loadSampleWorkflow}
@@ -371,10 +380,10 @@ function WorkflowEditor({ user, onLogout }) {
                   onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 36px rgba(99,102,241,0.5)'}
                   onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(99,102,241,0.3)'}
                 >
-                  Load sample workflow
+                  {t('canvas.loadSample', lang)}
                 </button>
                 <div style={{ fontSize: 11, color: '#1e2a3a', marginTop: 12 }}>
-                  YouTube → Claude AI → Twitter + Telegram
+                  {t('canvas.sampleDesc', lang)}
                 </div>
               </div>
             </div>
@@ -384,7 +393,7 @@ function WorkflowEditor({ user, onLogout }) {
 
       {/* Right panel */}
       <div style={{
-        width: 300, background: '#0d0d1a', borderLeft: '1px solid #ffffff0d',
+        width: 300, background: '#10101e', borderLeft: '1px solid #ffffff12',
         display: 'flex', flexDirection: 'column', flexShrink: 0,
       }}>
         {configPanelNode ? (
