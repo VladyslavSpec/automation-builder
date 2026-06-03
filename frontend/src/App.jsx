@@ -159,18 +159,24 @@ function WorkflowEditor({ user, onLogout }) {
         }}>
           {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginRight: 6, flexShrink: 0 }}>
-            <svg width="28" height="20" viewBox="0 0 30 22" fill="none">
+            <svg width="30" height="21" viewBox="0 0 32 22" fill="none"
+                 style={{ filter: 'drop-shadow(0 0 4px rgba(129,140,248,1)) drop-shadow(0 0 10px rgba(192,132,252,0.65)) drop-shadow(0 0 18px rgba(129,140,248,0.3))' }}>
               <defs>
-                <linearGradient id="top-g" x1="0" y1="0" x2="30" y2="22" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor="#818cf8"/>
-                  <stop offset="100%" stopColor="#c084fc"/>
+                <linearGradient id="top-g" x1="0" y1="0" x2="32" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%"   stopColor="#818cf8"/>
+                  <stop offset="55%"  stopColor="#c084fc"/>
+                  <stop offset="100%" stopColor="#22d3ee"/>
                 </linearGradient>
               </defs>
-              <path d="M1 4 Q7.5 0 15 4 Q22.5 8 29 4"    stroke="url(#top-g)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-              <path d="M1 11 Q7.5 7 15 11 Q22.5 15 29 11"  stroke="url(#top-g)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-              <path d="M1 18 Q7.5 14 15 18 Q22.5 22 29 18" stroke="url(#top-g)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+              <path d="M1 4 Q8.5 0 16 4 Q23.5 8 31 4"    stroke="url(#top-g)" strokeWidth="2.3" fill="none" strokeLinecap="round"/>
+              <path d="M1 11 Q8.5 7 16 11 Q23.5 15 31 11"  stroke="url(#top-g)" strokeWidth="2.3" fill="none" strokeLinecap="round"/>
+              <path d="M1 18 Q8.5 14 16 18 Q23.5 22 31 18" stroke="url(#top-g)" strokeWidth="2.3" fill="none" strokeLinecap="round"/>
             </svg>
-            <span style={{ fontSize: 15, fontWeight: 800, color: '#e2e8f0', letterSpacing: '.5px', whiteSpace: 'nowrap' }}>
+            <span style={{
+              fontSize: 15, fontWeight: 800, letterSpacing: '.5px', whiteSpace: 'nowrap',
+              background: 'linear-gradient(135deg, #818cf8, #c084fc, #22d3ee)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>
               Weavo
             </span>
           </div>

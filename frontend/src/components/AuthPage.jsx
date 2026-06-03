@@ -108,16 +108,18 @@ export default function AuthPage({ onAuth }) {
 
         {/* Logo */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, marginBottom: 26 }}>
-          <svg width="52" height="38" viewBox="0 0 30 22" fill="none">
+          <svg width="58" height="40" viewBox="0 0 32 22" fill="none"
+               style={{ filter: 'drop-shadow(0 0 5px rgba(129,140,248,1)) drop-shadow(0 0 14px rgba(192,132,252,0.8)) drop-shadow(0 0 28px rgba(34,211,238,0.35))' }}>
             <defs>
-              <linearGradient id="auth-g" x1="0" y1="0" x2="30" y2="22" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#818cf8"/>
-                <stop offset="100%" stopColor="#c084fc"/>
+              <linearGradient id="auth-g" x1="0" y1="0" x2="32" y2="22" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stopColor="#818cf8"/>
+                <stop offset="55%"  stopColor="#c084fc"/>
+                <stop offset="100%" stopColor="#22d3ee"/>
               </linearGradient>
             </defs>
-            <path d="M1 4 Q7.5 0 15 4 Q22.5 8 29 4"    stroke="url(#auth-g)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-            <path d="M1 11 Q7.5 7 15 11 Q22.5 15 29 11"  stroke="url(#auth-g)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-            <path d="M1 18 Q7.5 14 15 18 Q22.5 22 29 18" stroke="url(#auth-g)" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+            <path d="M1 4 Q8.5 0 16 4 Q23.5 8 31 4"    stroke="url(#auth-g)" strokeWidth="2.4" fill="none" strokeLinecap="round"/>
+            <path d="M1 11 Q8.5 7 16 11 Q23.5 15 31 11"  stroke="url(#auth-g)" strokeWidth="2.4" fill="none" strokeLinecap="round"/>
+            <path d="M1 18 Q8.5 14 16 18 Q23.5 22 31 18" stroke="url(#auth-g)" strokeWidth="2.4" fill="none" strokeLinecap="round"/>
           </svg>
           <div>
             <div style={{

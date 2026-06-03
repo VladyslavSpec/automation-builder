@@ -65,7 +65,9 @@
     }
     .nav-inner { max-width:1200px; width:100%; margin:0 auto; padding:0 28px;
       display:flex; align-items:center; justify-content:space-between; }
-    .nav-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; letter-spacing:.6px; }
+    .nav-logo { display:flex; align-items:center; gap:10px; font-size:18px; font-weight:800; letter-spacing:.6px;
+      background: linear-gradient(135deg, #818cf8, #c084fc, #22d3ee);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .nav-logo-icon {
       width:28px; height:28px;
       display:flex; align-items:center; justify-content:center;
@@ -273,16 +275,18 @@
   <div class="nav-inner">
     <a href="/landing" class="nav-logo">
       <div class="nav-logo-icon">
-        <svg width="30" height="22" viewBox="0 0 30 22" fill="none">
+        <svg width="34" height="24" viewBox="0 0 32 22" fill="none"
+             style="filter: drop-shadow(0 0 4px rgba(129,140,248,1)) drop-shadow(0 0 10px rgba(192,132,252,0.7)) drop-shadow(0 0 20px rgba(129,140,248,0.35));">
           <defs>
-            <linearGradient id="nav-g" x1="0" y1="0" x2="30" y2="22" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#818cf8"/>
-              <stop offset="100%" stop-color="#c084fc"/>
+            <linearGradient id="nav-g" x1="0" y1="0" x2="32" y2="22" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#818cf8"/>
+              <stop offset="55%"  stop-color="#c084fc"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
             </linearGradient>
           </defs>
-          <path d="M1 4 Q7.5 0 15 4 Q22.5 8 29 4"   stroke="url(#nav-g)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-          <path d="M1 11 Q7.5 7 15 11 Q22.5 15 29 11" stroke="url(#nav-g)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-          <path d="M1 18 Q7.5 14 15 18 Q22.5 22 29 18" stroke="url(#nav-g)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M1 4 Q8.5 0 16 4 Q23.5 8 31 4"    stroke="url(#nav-g)" stroke-width="2.3" fill="none" stroke-linecap="round"/>
+          <path d="M1 11 Q8.5 7 16 11 Q23.5 15 31 11"  stroke="url(#nav-g)" stroke-width="2.3" fill="none" stroke-linecap="round"/>
+          <path d="M1 18 Q8.5 14 16 18 Q23.5 22 31 18" stroke="url(#nav-g)" stroke-width="2.3" fill="none" stroke-linecap="round"/>
         </svg>
       </div>
       Weavo
@@ -430,16 +434,18 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-logo" style="display:flex;align-items:center;gap:8px;">
-      <svg width="26" height="19" viewBox="0 0 30 22" fill="none">
+      <svg width="28" height="20" viewBox="0 0 32 22" fill="none"
+           style="filter: drop-shadow(0 0 4px rgba(129,140,248,0.9)) drop-shadow(0 0 10px rgba(192,132,252,0.5));">
         <defs>
-          <linearGradient id="ft-g" x1="0" y1="0" x2="30" y2="22" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#818cf8"/>
-            <stop offset="100%" stop-color="#c084fc"/>
+          <linearGradient id="ft-g" x1="0" y1="0" x2="32" y2="22" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#818cf8"/>
+            <stop offset="55%"  stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#22d3ee"/>
           </linearGradient>
         </defs>
-        <path d="M1 4 Q7.5 0 15 4 Q22.5 8 29 4"   stroke="url(#ft-g)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-        <path d="M1 11 Q7.5 7 15 11 Q22.5 15 29 11" stroke="url(#ft-g)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-        <path d="M1 18 Q7.5 14 15 18 Q22.5 22 29 18" stroke="url(#ft-g)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <path d="M1 4 Q8.5 0 16 4 Q23.5 8 31 4"    stroke="url(#ft-g)" stroke-width="2.3" fill="none" stroke-linecap="round"/>
+        <path d="M1 11 Q8.5 7 16 11 Q23.5 15 31 11"  stroke="url(#ft-g)" stroke-width="2.3" fill="none" stroke-linecap="round"/>
+        <path d="M1 18 Q8.5 14 16 18 Q23.5 22 31 18" stroke="url(#ft-g)" stroke-width="2.3" fill="none" stroke-linecap="round"/>
       </svg>
       Weavo
     </div>
