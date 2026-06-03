@@ -218,13 +218,28 @@ export default function SettingsPanel() {
           <button
             onClick={savePrefs}
             style={{
-              width: '100%', background: prefsSaved ? '#16a34a20' : '#1e2030',
-              border: `1px solid ${prefsSaved ? '#16a34a40' : '#ffffff15'}`,
-              borderRadius: 4, color: prefsSaved ? '#4ade80' : '#94a3b8',
-              fontSize: 11, padding: '7px', cursor: 'pointer', transition: 'all 0.15s',
+              width: '100%',
+              background: prefsSaved
+                ? 'linear-gradient(135deg, #16a34a, #15803d)'
+                : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              border: 'none',
+              borderRadius: 6,
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 700,
+              padding: '9px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              boxShadow: prefsSaved
+                ? '0 0 16px rgba(22,163,74,0.45)'
+                : '0 0 18px rgba(99,102,241,0.5)',
+              letterSpacing: 0.3,
+              fontFamily: 'inherit',
             }}
+            onMouseEnter={e => { if (!prefsSaved) e.currentTarget.style.boxShadow = '0 0 26px rgba(99,102,241,0.7)'; }}
+            onMouseLeave={e => { if (!prefsSaved) e.currentTarget.style.boxShadow = '0 0 18px rgba(99,102,241,0.5)'; }}
           >
-            {prefsSaved ? t('settings.saved', lang) : t('settings.save', lang)}
+            {prefsSaved ? `✓ ${t('settings.saved', lang)}` : t('settings.save', lang)}
           </button>
         </div>
       )}
