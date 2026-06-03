@@ -3,207 +3,30 @@ import axios from 'axios';
 
 const API = import.meta.env.VITE_API_URL || '';
 
-/* ─── Inline style constants ──────────────────────────────── */
-const styles = {
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    background: '#07070f',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-
-  blob1: {
-    position: 'absolute',
-    top: '-20%',
-    left: '-10%',
-    width: 600,
-    height: 600,
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)',
-    filter: 'blur(60px)',
-    pointerEvents: 'none',
-    zIndex: 0,
-  },
-
-  blob2: {
-    position: 'absolute',
-    bottom: '-15%',
-    right: '-10%',
-    width: 500,
-    height: 500,
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)',
-    filter: 'blur(60px)',
-    pointerEvents: 'none',
-    zIndex: 0,
-  },
-
-  card: {
-    position: 'relative',
-    zIndex: 1,
-    width: 400,
-    background: '#0c0c18',
-    border: '1px solid rgba(255,255,255,0.07)',
-    borderRadius: 16,
-    padding: '36px 32px',
-    boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
-    animation: 'fadeIn 0.35s ease both',
-  },
-
-  topGlow: {
-    position: 'absolute',
-    top: 0,
-    left: '10%',
-    right: '10%',
-    height: 1,
-    background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent)',
-    borderRadius: 1,
-  },
-
-  logoSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 28,
-  },
-
-  logoIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 8,
-    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 0 20px rgba(99,102,241,0.35)',
-    flexShrink: 0,
-  },
-
-  logoText: {
-    fontSize: 17,
-    fontWeight: 800,
-    background: 'linear-gradient(135deg, #6366f1, #a78bfa)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-    lineHeight: 1.2,
-  },
-
-  logoSubtitle: {
-    fontSize: 13,
-    color: '#475569',
-    lineHeight: 1,
-  },
-
-  tabsWrapper: {
-    display: 'flex',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.06)',
-    borderRadius: 8,
-    padding: 3,
-    marginBottom: 24,
-    gap: 3,
-  },
-
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
-  },
-
-  fieldGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 5,
-  },
-
-  label: {
-    fontSize: 10,
-    color: '#475569',
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    letterSpacing: '0.8px',
-  },
-
-  input: {
-    width: '100%',
-    background: '#080810',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 6,
-    padding: '10px 14px',
-    fontSize: 13,
-    fontFamily: 'inherit',
-    color: '#e2e8f0',
-    outline: 'none',
-    transition: 'border-color 0.15s, box-shadow 0.15s',
-  },
-
-  error: {
-    background: 'rgba(239,68,68,0.08)',
-    border: '1px solid rgba(239,68,68,0.2)',
-    borderRadius: 6,
-    padding: '8px 12px',
-    fontSize: 12,
-    color: '#f87171',
-    lineHeight: 1.4,
-  },
-
-  submitBtn: {
-    width: '100%',
-    position: 'relative',
-    overflow: 'hidden',
-    padding: '12px',
-    border: 'none',
-    borderRadius: 8,
-    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 700,
-    fontFamily: 'inherit',
-    cursor: 'pointer',
-    transition: 'box-shadow 0.2s, opacity 0.2s',
-    marginTop: 4,
-  },
-
-  bottomNote: {
-    marginTop: 18,
-    textAlign: 'center',
-    fontSize: 11,
-    color: '#334155',
-  },
-};
-
-/* ─── SVG Logo Icon ──────────────────────────────────────── */
-function LogoIcon() {
-  return (
-    <div style={styles.logoIcon}>
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="2" y="2" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.9)" />
-        <rect x="11" y="2" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.6)" />
-        <rect x="2" y="11" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.6)" />
-        <rect x="11" y="11" width="7" height="7" rx="1.5" fill="rgba(255,255,255,0.4)" />
-      </svg>
-    </div>
-  );
-}
-
-/* ─── Component ──────────────────────────────────────────── */
 export default function AuthPage({ onAuth }) {
-  const [tab, setTab] = useState('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [inputFocus, setInputFocus] = useState(null); // 'email' | 'password'
-  const [btnHover, setBtnHover] = useState(false);
+  const [tab, setTab]                     = useState('login');
+  const [email, setEmail]                 = useState('');
+  const [password, setPassword]           = useState('');
+  const [confirmPassword, setConfirm]     = useState('');
+  const [agreeTerms, setAgreeTerms]       = useState(false);
+  const [agreePrivacy, setAgreePrivacy]   = useState(false);
+  const [error, setError]                 = useState('');
+  const [loading, setLoading]             = useState(false);
+  const [focusField, setFocus]            = useState(null);
+  const [btnHover, setBtnHover]           = useState(false);
+
+  const switchTab = (t) => { setTab(t); setError(''); setConfirm(''); setAgreeTerms(false); setAgreePrivacy(false); };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (tab === 'register') {
+      if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
+      if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
+      if (!agreeTerms || !agreePrivacy) { setError('Please accept the Terms of Service and Privacy Policy to continue.'); return; }
+    }
+
     setLoading(true);
     try {
       if (tab === 'register') {
@@ -217,170 +40,301 @@ export default function AuthPage({ onAuth }) {
         onAuth(res.data.access_token);
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Something went wrong');
+      setError(err.response?.data?.detail || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const getInputStyle = (field) => ({
-    ...styles.input,
-    borderColor: inputFocus === field
-      ? 'rgba(99,102,241,0.5)'
-      : 'rgba(255,255,255,0.08)',
-    boxShadow: inputFocus === field
-      ? '0 0 0 3px rgba(99,102,241,0.1)'
-      : 'none',
-  });
-
-  const getTabStyle = (t) => ({
-    flex: 1,
-    padding: '7px 0',
-    border: 'none',
-    borderRadius: 6,
-    background: tab === t ? '#6366f1' : 'transparent',
-    color: tab === t ? '#fff' : '#64748b',
+  const inputStyle = (field) => ({
+    width: '100%',
+    background: '#080810',
+    border: `1px solid ${focusField === field ? 'rgba(99,102,241,0.55)' : 'rgba(255,255,255,0.08)'}`,
+    borderRadius: 7,
+    padding: '10px 13px',
     fontSize: 13,
-    fontWeight: 600,
     fontFamily: 'inherit',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    boxShadow: tab === t ? '0 0 16px rgba(99,102,241,0.3)' : 'none',
+    color: '#e2e8f0',
+    outline: 'none',
+    transition: 'border-color 0.15s, box-shadow 0.15s',
+    boxShadow: focusField === field ? '0 0 0 3px rgba(99,102,241,0.1)' : 'none',
+    boxSizing: 'border-box',
   });
 
-  const getBtnStyle = () => ({
-    ...styles.submitBtn,
-    opacity: loading ? 0.65 : 1,
-    cursor: loading ? 'default' : 'pointer',
-    boxShadow: btnHover && !loading
-      ? '0 0 24px rgba(99,102,241,0.4)'
-      : '0 0 0 transparent',
-  });
+  const labelStyle = {
+    fontSize: 10,
+    color: '#475569',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.8px',
+    display: 'block',
+    marginBottom: 5,
+  };
+
+  const isRegister = tab === 'register';
 
   return (
-    <div style={styles.root}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      minHeight: '100vh', background: '#07070f', position: 'relative', overflow: 'hidden',
+      padding: '40px 20px',
+    }}>
       {/* Ambient blobs */}
-      <div style={styles.blob1} />
-      <div style={styles.blob2} />
+      <div style={{
+        position: 'absolute', top: '-15%', left: '-8%', width: 560, height: 560,
+        borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.11) 0%, transparent 70%)',
+        filter: 'blur(60px)', pointerEvents: 'none',
+      }}/>
+      <div style={{
+        position: 'absolute', bottom: '-12%', right: '-8%', width: 480, height: 480,
+        borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.09) 0%, transparent 70%)',
+        filter: 'blur(60px)', pointerEvents: 'none',
+      }}/>
 
       {/* Card */}
-      <div style={styles.card}>
+      <div style={{
+        position: 'relative', zIndex: 1, width: '100%', maxWidth: 420,
+        background: '#0c0c18', border: '1px solid rgba(255,255,255,0.07)',
+        borderRadius: 18, padding: '34px 30px 28px',
+        boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
+        animation: 'fadeIn 0.3s ease both',
+      }}>
         {/* Top glow line */}
-        <div style={styles.topGlow} />
+        <div style={{
+          position: 'absolute', top: 0, left: '10%', right: '10%', height: 1,
+          background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent)',
+          borderRadius: 1,
+        }}/>
 
         {/* Logo */}
-        <div style={styles.logoSection}>
-          <LogoIcon />
-          <div style={styles.logoText}>Automation Builder</div>
-          <div style={styles.logoSubtitle}>Visual workflow automation</div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, marginBottom: 26 }}>
+          <div style={{
+            width: 38, height: 38, borderRadius: 9,
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 0 22px rgba(99,102,241,0.35)',
+          }}>
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+              <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.95)"/>
+              <rect x="9"   y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
+              <rect x="1.5" y="9"   width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
+              <rect x="9"   y="9"   width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.35)"/>
+            </svg>
+          </div>
+          <div>
+            <div style={{
+              fontSize: 18, fontWeight: 800, textAlign: 'center',
+              background: 'linear-gradient(135deg, #6366f1, #a78bfa)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>FlowBuilder</div>
+            <div style={{ fontSize: 12, color: '#334155', textAlign: 'center', marginTop: 2 }}>
+              {isRegister ? 'Create your free account' : 'Welcome back — log in to continue'}
+            </div>
+          </div>
         </div>
 
         {/* Tabs */}
-        <div style={styles.tabsWrapper}>
-          {['login', 'register'].map((t) => (
+        <div style={{
+          display: 'flex', background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.06)', borderRadius: 9,
+          padding: 3, marginBottom: 22, gap: 3,
+        }}>
+          {[
+            { key: 'login',    label: 'Log In',   sub: 'I have an account' },
+            { key: 'register', label: 'Register',  sub: 'New user' },
+          ].map(({ key, label, sub }) => (
             <button
-              key={t}
+              key={key}
               type="button"
-              onClick={() => { setTab(t); setError(''); }}
-              style={getTabStyle(t)}
+              onClick={() => switchTab(key)}
+              style={{
+                flex: 1, padding: '7px 0', border: 'none', borderRadius: 7,
+                background: tab === key ? '#6366f1' : 'transparent',
+                color: tab === key ? '#fff' : '#64748b',
+                fontFamily: 'inherit', cursor: 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: tab === key ? '0 0 16px rgba(99,102,241,0.3)' : 'none',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
+              }}
             >
-              {t === 'login' ? 'Sign In' : 'Sign Up'}
+              <span style={{ fontSize: 12, fontWeight: 700 }}>{label}</span>
+              <span style={{ fontSize: 9.5, opacity: tab === key ? 0.75 : 0.5, letterSpacing: 0.1 }}>{sub}</span>
             </button>
           ))}
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Email</label>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Email */}
+          <div>
+            <label style={labelStyle}>Email address</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="email" value={email} required
+              onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
-              required
-              style={getInputStyle('email')}
-              onFocus={() => setInputFocus('email')}
-              onBlur={() => setInputFocus(null)}
+              style={inputStyle('email')}
+              onFocus={() => setFocus('email')}
+              onBlur={() => setFocus(null)}
             />
           </div>
 
-          <div style={styles.fieldGroup}>
-            <label style={styles.label}>Password</label>
+          {/* Password */}
+          <div>
+            <label style={labelStyle}>Password</label>
             <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={tab === 'register' ? 'Min. 8 characters' : '••••••••'}
-              required
-              style={getInputStyle('password')}
-              onFocus={() => setInputFocus('password')}
-              onBlur={() => setInputFocus(null)}
+              type="password" value={password} required
+              onChange={e => setPassword(e.target.value)}
+              placeholder={isRegister ? 'At least 8 characters' : '••••••••'}
+              style={inputStyle('password')}
+              onFocus={() => setFocus('password')}
+              onBlur={() => setFocus(null)}
             />
           </div>
 
-          {error && (
-            <div style={styles.error}>{error}</div>
+          {/* Confirm Password — register only */}
+          {isRegister && (
+            <div>
+              <label style={labelStyle}>Confirm password</label>
+              <input
+                type="password" value={confirmPassword} required
+                onChange={e => setConfirm(e.target.value)}
+                placeholder="Repeat your password"
+                style={{
+                  ...inputStyle('confirm'),
+                  borderColor: confirmPassword && confirmPassword !== password
+                    ? 'rgba(239,68,68,0.5)'
+                    : focusField === 'confirm' ? 'rgba(99,102,241,0.55)' : 'rgba(255,255,255,0.08)',
+                }}
+                onFocus={() => setFocus('confirm')}
+                onBlur={() => setFocus(null)}
+              />
+              {confirmPassword && confirmPassword !== password && (
+                <div style={{ fontSize: 11, color: '#f87171', marginTop: 4 }}>Passwords don't match</div>
+              )}
+            </div>
           )}
 
+          {/* Checkboxes — register only */}
+          {isRegister && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 2 }}>
+              <CheckboxRow
+                checked={agreeTerms}
+                onChange={setAgreeTerms}
+                id="terms"
+              >
+                I have read and agree to the{' '}
+                <a href="/terms.html" target="_blank" rel="noopener" style={{ color: '#6366f1' }}>Terms of Service</a>
+              </CheckboxRow>
+              <CheckboxRow
+                checked={agreePrivacy}
+                onChange={setAgreePrivacy}
+                id="privacy"
+              >
+                I have read and accept the{' '}
+                <a href="/privacy.html" target="_blank" rel="noopener" style={{ color: '#6366f1' }}>Privacy Policy</a>
+              </CheckboxRow>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div style={{
+              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+              borderRadius: 7, padding: '8px 12px', fontSize: 12, color: '#f87171', lineHeight: 1.5,
+            }}>{error}</div>
+          )}
+
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            style={getBtnStyle()}
             onMouseEnter={() => setBtnHover(true)}
             onMouseLeave={() => setBtnHover(false)}
+            style={{
+              width: '100%', position: 'relative', overflow: 'hidden',
+              padding: '12px', border: 'none', borderRadius: 9,
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              color: '#fff', fontSize: 14, fontWeight: 700,
+              fontFamily: 'inherit', cursor: loading ? 'default' : 'pointer',
+              opacity: loading ? 0.65 : 1, marginTop: 4,
+              transition: 'box-shadow 0.2s, opacity 0.2s',
+              boxShadow: btnHover && !loading ? '0 0 28px rgba(99,102,241,0.45)' : 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}
           >
-            {/* Shimmer overlay */}
             {btnHover && !loading && (
-              <span
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background:
-                    'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%)',
-                  animation: 'shimmer 0.6s ease forwards',
-                  pointerEvents: 'none',
-                }}
-              />
+              <span style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)',
+                animation: 'shimmer 0.6s ease forwards', pointerEvents: 'none',
+              }}/>
             )}
-
-            {/* Spinner or label */}
             {loading ? (
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: 14,
-                  height: 14,
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderTopColor: '#fff',
-                  borderRadius: '50%',
-                  animation: 'spin 0.7s linear infinite',
-                  verticalAlign: 'middle',
-                }}
-              />
-            ) : (
-              tab === 'login' ? 'Sign In' : 'Create Account'
-            )}
+              <span style={{
+                width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)',
+                borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite',
+                display: 'inline-block',
+              }}/>
+            ) : isRegister ? 'Create Free Account' : 'Log In to My Account'}
           </button>
         </form>
 
-        {/* Bottom note */}
-        <div style={styles.bottomNote}>Free forever — no credit card required</div>
-
-        {/* Legal links */}
-        <div style={{
-          marginTop: 16, textAlign: 'center', fontSize: 10.5, color: '#1e2a3a',
-          lineHeight: 1.6,
-        }}>
-          By signing up, you agree to our{' '}
-          <a href="/terms.html" target="_blank" rel="noopener" style={{ color: '#334155', textDecoration: 'underline', textUnderlineOffset: 2 }}>Terms of Service</a>
-          {' '}and{' '}
-          <a href="/privacy.html" target="_blank" rel="noopener" style={{ color: '#334155', textDecoration: 'underline', textUnderlineOffset: 2 }}>Privacy Policy</a>
+        {/* Bottom hint */}
+        <div style={{ marginTop: 16, textAlign: 'center', fontSize: 12, color: '#334155' }}>
+          {isRegister
+            ? <>Already have an account?{' '}<button type="button" onClick={() => switchTab('login')} style={{ background:'none', border:'none', color:'#6366f1', cursor:'pointer', fontSize:12, fontFamily:'inherit', padding:0 }}>Log in</button></>
+            : <>Don't have an account yet?{' '}<button type="button" onClick={() => switchTab('register')} style={{ background:'none', border:'none', color:'#6366f1', cursor:'pointer', fontSize:12, fontFamily:'inherit', padding:0 }}>Register for free</button></>
+          }
         </div>
       </div>
+
+      {/* Page footer */}
+      <div style={{
+        position: 'relative', zIndex: 1, marginTop: 28,
+        display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'center',
+        fontSize: 11.5, color: '#1e2a3a',
+      }}>
+        <span>© 2026 FlowBuilder</span>
+        <span style={{ opacity: 0.3 }}>·</span>
+        <a href="/privacy.html" target="_blank" rel="noopener"
+          style={{ color: '#2d3a4d', textDecoration: 'none' }}
+          onMouseEnter={e => e.target.style.color = '#64748b'}
+          onMouseLeave={e => e.target.style.color = '#2d3a4d'}
+        >Privacy Policy</a>
+        <span style={{ opacity: 0.3 }}>·</span>
+        <a href="/terms.html" target="_blank" rel="noopener"
+          style={{ color: '#2d3a4d', textDecoration: 'none' }}
+          onMouseEnter={e => e.target.style.color = '#64748b'}
+          onMouseLeave={e => e.target.style.color = '#2d3a4d'}
+        >Terms of Service</a>
+      </div>
     </div>
+  );
+}
+
+function CheckboxRow({ checked, onChange, id, children }) {
+  return (
+    <label htmlFor={id} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, cursor: 'pointer' }}>
+      <div
+        onClick={() => onChange(!checked)}
+        style={{
+          width: 16, height: 16, borderRadius: 4, flexShrink: 0, marginTop: 1,
+          background: checked ? '#6366f1' : 'transparent',
+          border: `1.5px solid ${checked ? '#6366f1' : 'rgba(255,255,255,0.15)'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all 0.15s', cursor: 'pointer',
+          boxShadow: checked ? '0 0 8px rgba(99,102,241,0.4)' : 'none',
+        }}
+      >
+        {checked && (
+          <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+            <path d="M1 3.5L3.5 6L8 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+      </div>
+      <span style={{ fontSize: 11.5, color: '#475569', lineHeight: 1.5, userSelect: 'none' }}>
+        {children}
+      </span>
+    </label>
   );
 }
