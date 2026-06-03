@@ -369,6 +369,17 @@ export default function AuthPage({ onAuth }) {
 
         {/* Bottom note */}
         <div style={styles.bottomNote}>Free forever — no credit card required</div>
+
+        {/* Legal links */}
+        <div style={{
+          marginTop: 16, textAlign: 'center', fontSize: 10.5, color: '#1e2a3a',
+          lineHeight: 1.6,
+        }}>
+          By signing up, you agree to our{' '}
+          <a href="/terms.html" target="_blank" rel="noopener" style={{ color: '#334155', textDecoration: 'underline', textUnderlineOffset: 2 }}>Terms of Service</a>
+          {' '}and{' '}
+          <a href="/privacy.html" target="_blank" rel="noopener" style={{ color: '#334155', textDecoration: 'underline', textUnderlineOffset: 2 }}>Privacy Policy</a>
+        </div>
       </div>
     </div>
   );

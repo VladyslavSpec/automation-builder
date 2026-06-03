@@ -307,33 +307,33 @@ export const useStore = create(persist((set, get) => ({
     const nodes = [
       {
         id: 'webhook1', type: 'automationNode', position: { x: 60, y: 220 },
-        data: { id:'webhook1', nodeType:'trigger.webhook', label:'Webhook', icon:'🔗', color:'#6366f1',
+        data: { id:'webhook1', nodeType:'trigger.webhook', label:'Webhook', icon:'', color:'#6366f1',
           config:{ token:'my-youtube-alert' }, fields:[] }
       },
       {
         id: 'youtube1', type: 'automationNode', position: { x: 320, y: 220 },
-        data: { id:'youtube1', nodeType:'action.youtube_get_video', label:'Get Video', icon:'▶', color:'#ef4444',
+        data: { id:'youtube1', nodeType:'action.youtube_get_video', label:'Get Video', icon:'', color:'#ef4444',
           config:{ video_id:'{{trigger.video_id}}', api_key:'{{env.YOUTUBE_API_KEY}}' }, fields:[] }
       },
       {
         id: 'claude1', type: 'automationNode', position: { x: 580, y: 140 },
-        data: { id:'claude1', nodeType:'action.claude_generate', label:'Claude AI', icon:'◆', color:'#f59e0b',
+        data: { id:'claude1', nodeType:'action.claude_generate', label:'Claude AI', icon:'', color:'#a855f7',
           config:{ prompt:'Write a Twitter thread about: {{youtube1.title}} - {{youtube1.description}}', model:'claude-haiku-4-5' }, fields:[] }
       },
       {
         id: 'twitter1', type: 'automationNode', position: { x: 840, y: 140 },
-        data: { id:'twitter1', nodeType:'action.twitter_post_thread', label:'Post Thread', icon:'𝕏', color:'#e2e8f0',
+        data: { id:'twitter1', nodeType:'action.twitter_post_thread', label:'Post Thread', icon:'', color:'#e2e8f0',
           config:{ text:'{{claude1.text}}', api_key:'{{env.TWITTER_API_KEY}}' }, fields:[] }
       },
       {
         id: 'claude2', type: 'automationNode', position: { x: 580, y: 320 },
-        data: { id:'claude2', nodeType:'action.claude_generate', label:'Claude AI', icon:'◆', color:'#f59e0b',
+        data: { id:'claude2', nodeType:'action.claude_generate', label:'Claude AI', icon:'', color:'#a855f7',
           config:{ prompt:'Write a short Telegram summary (2-3 sentences) about: {{youtube1.title}}', model:'claude-haiku-4-5' }, fields:[] }
       },
       {
         id: 'telegram1', type: 'automationNode', position: { x: 840, y: 320 },
-        data: { id:'telegram1', nodeType:'action.telegram_send_message', label:'Send Message', icon:'✈', color:'#0ea5e9',
-          config:{ bot_token:'{{env.TG_TOKEN}}', chat_id:'{{env.TG_CHAT_ID}}', text:'🎬 New Video: {{youtube1.title}}\n\n{{claude2.text}}' }, fields:[] }
+        data: { id:'telegram1', nodeType:'action.telegram_send_message', label:'Send Message', icon:'', color:'#0ea5e9',
+          config:{ bot_token:'{{env.TG_TOKEN}}', chat_id:'{{env.TG_CHAT_ID}}', text:'New Video: {{youtube1.title}}\n\n{{claude2.text}}' }, fields:[] }
       },
     ];
     const edges = [
@@ -356,7 +356,7 @@ export const useStore = create(persist((set, get) => ({
   loadWorkflow: (wf) => {
     const nodes = (wf.definition?.nodes || []).map(n => ({
       id: n.id, type: 'automationNode', position: n.position || { x: 100, y: 100 },
-      data: { id: n.id, nodeType: n.type, label: n.label || n.type, icon: n.icon || '⚙️', color: n.color || '#64748b', config: n.config || {}, fields: n.fields || [] },
+      data: { id: n.id, nodeType: n.type, label: n.label || n.type, icon: '', color: n.color || '#64748b', config: n.config || {}, fields: n.fields || [] },
     }));
     const edges = (wf.definition?.connections || []).map((c, i) => ({
       id: `e${i}`, source: c.from, target: c.to, animated: true,

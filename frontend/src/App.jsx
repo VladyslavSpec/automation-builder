@@ -151,56 +151,127 @@ function WorkflowEditor({ user, onLogout }) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Topbar */}
         <div style={{
-          height: 44, background: '#0d0d1a', borderBottom: '1px solid #ffffff0d',
-          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 10, flexShrink: 0,
+          height: 44, background: '#0a0a14',
+          borderBottom: '1px solid #ffffff0a',
+          display: 'flex', alignItems: 'center', padding: '0 12px', gap: 8, flexShrink: 0,
         }}>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginRight: 6, flexShrink: 0 }}>
+            <div style={{
+              width: 22, height: 22, borderRadius: 5,
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 0 10px rgba(99,102,241,0.4)',
+            }}>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.95)"/>
+                <rect x="9" y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
+                <rect x="1.5" y="9" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
+                <rect x="9" y="9" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.35)"/>
+              </svg>
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0', letterSpacing: -0.2, whiteSpace: 'nowrap' }}>
+              FlowBuilder
+            </span>
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: 1, height: 18, background: '#ffffff10', flexShrink: 0 }}/>
+
+          {/* Workflow name */}
           <input
             value={workflowName}
             onChange={e => setWorkflowName(e.target.value)}
             style={{
-              background: 'none', border: 'none', color: '#e2e8f0', fontSize: 13,
-              fontWeight: 500, outline: 'none', minWidth: 0, flex: 1, maxWidth: 280,
-              letterSpacing: 0.1,
+              background: 'none', border: 'none', color: '#94a3b8', fontSize: 12,
+              fontWeight: 500, outline: 'none', minWidth: 0, flex: 1, maxWidth: 220,
+              letterSpacing: 0.1, fontFamily: 'inherit',
             }}
+            onFocus={e => e.target.style.color = '#e2e8f0'}
+            onBlur={e => e.target.style.color = '#94a3b8'}
           />
-          <div style={{ flex: 1 }} />
-          {/* Undo/Redo buttons */}
+
+          <div style={{ flex: 1 }}/>
+
+          {/* Node/edge count */}
+          <span style={{ fontSize: 10, color: '#1e2a3a', whiteSpace: 'nowrap', letterSpacing: 0.3, marginRight: 4 }}>
+            {nodes.length}n · {edges.length}e
+          </span>
+
+          {/* Undo */}
           <button
             onClick={() => useStore.getState().undo()}
             disabled={history.length === 0}
-            title="Undo  (Ctrl+Z)"
+            title="Undo (Ctrl+Z)"
             style={{
-              background: 'none', border: 'none', color: history.length > 0 ? '#64748b' : '#1e2030',
-              cursor: history.length > 0 ? 'pointer' : 'default', fontSize: 14, padding: '2px 4px',
+              background: 'none', border: 'none',
+              color: history.length > 0 ? '#475569' : '#1a1e2e',
+              cursor: history.length > 0 ? 'pointer' : 'default',
+              fontSize: 13, padding: '3px 5px', lineHeight: 1,
             }}
           >↩</button>
+
+          {/* Redo */}
           <button
             onClick={() => useStore.getState().redo()}
             disabled={historyFuture.length === 0}
-            title="Redo  (Ctrl+Y)"
+            title="Redo (Ctrl+Y)"
             style={{
-              background: 'none', border: 'none', color: historyFuture.length > 0 ? '#64748b' : '#1e2030',
-              cursor: historyFuture.length > 0 ? 'pointer' : 'default', fontSize: 14, padding: '2px 4px', marginRight: 4,
+              background: 'none', border: 'none',
+              color: historyFuture.length > 0 ? '#475569' : '#1a1e2e',
+              cursor: historyFuture.length > 0 ? 'pointer' : 'default',
+              fontSize: 13, padding: '3px 5px', lineHeight: 1, marginRight: 4,
             }}
           >↪</button>
-          <span style={{ fontSize: 10, color: '#1e2a3a', whiteSpace: 'nowrap', letterSpacing: 0.3 }}>
-            {nodes.length} nodes · {edges.length} edges
-          </span>
+
+          {/* Save */}
           <button
             onClick={saveWorkflow}
             disabled={isSaving}
-            title="Save  (Ctrl+S)"
-            style={{ ...topbarBtn(false), opacity: isSaving ? 0.4 : 1 }}
+            title="Save (Ctrl+S)"
+            style={{
+              background: 'transparent', border: '1px solid #ffffff12',
+              borderRadius: 5, color: isSaving ? '#334155' : '#64748b',
+              padding: '4px 12px', cursor: isSaving ? 'default' : 'pointer',
+              fontSize: 11, fontWeight: 500, letterSpacing: 0.2,
+              fontFamily: 'inherit', transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { if (!isSaving) { e.currentTarget.style.borderColor = '#ffffff25'; e.currentTarget.style.color = '#94a3b8'; } }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#ffffff12'; e.currentTarget.style.color = '#64748b'; }}
           >
-            {isSaving ? 'Saving...' : 'Save'}
+            {isSaving ? 'Saving…' : 'Save'}
           </button>
+
+          {/* Run */}
           <button
             onClick={() => runWorkflow()}
             disabled={isRunning}
-            title="Run  (Ctrl+Enter)"
-            style={{ ...topbarBtn(true), opacity: isRunning ? 0.5 : 1 }}
+            title="Run (Ctrl+Enter)"
+            style={{
+              background: isRunning ? '#4f46e5' : 'linear-gradient(135deg, #6366f1, #7c3aed)',
+              border: 'none', borderRadius: 5, color: '#fff',
+              padding: '4px 14px', cursor: isRunning ? 'default' : 'pointer',
+              fontSize: 11, fontWeight: 600, letterSpacing: 0.3,
+              fontFamily: 'inherit', opacity: isRunning ? 0.6 : 1,
+              boxShadow: isRunning ? 'none' : '0 0 14px rgba(99,102,241,0.35)',
+              transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 5,
+            }}
           >
-            {isRunning ? 'Running...' : 'Run'}
+            {isRunning ? (
+              <>
+                <span style={{
+                  display: 'inline-block', width: 9, height: 9,
+                  border: '1.5px solid rgba(255,255,255,0.3)', borderTopColor: '#fff',
+                  borderRadius: '50%', animation: 'spin 0.7s linear infinite',
+                }}/>
+                Running
+              </>
+            ) : (
+              <>
+                <svg width="8" height="9" viewBox="0 0 8 9" fill="white"><path d="M1 1l6 3.5L1 8V1Z"/></svg>
+                Run
+              </>
+            )}
           </button>
         </div>
 
