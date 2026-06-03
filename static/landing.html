@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Automation Builder — Visual Workflow Automation</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>FlowBuilder — Visual Workflow Automation</title>
   <meta name="description" content="Connect YouTube, Telegram, Claude AI, and 20+ tools with a visual drag-and-drop editor. No code required.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,10 +67,8 @@
       display:flex; align-items:center; justify-content:space-between; }
     .nav-logo { display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700; letter-spacing:-.3px; }
     .nav-logo-icon {
-      width:28px; height:28px; border-radius:7px;
-      background: linear-gradient(135deg,var(--accent),var(--accent2));
+      width:28px; height:28px;
       display:flex; align-items:center; justify-content:center;
-      box-shadow: 0 0 16px rgba(99,102,241,.45);
     }
     .nav-links { display:flex; align-items:center; gap:28px; list-style:none; }
     .nav-links a { font-size:13px; font-weight:500; color:var(--muted); transition:color .15s; cursor:pointer; }
@@ -274,13 +273,19 @@
   <div class="nav-inner">
     <a href="/landing" class="nav-logo">
       <div class="nav-logo-icon">
-        <svg width="16" height="16" viewBox="0 0 32 32" fill="none">
-          <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="1.7"/>
-          <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <defs>
+            <linearGradient id="nav-g" x1="2" y1="7" x2="30" y2="25" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#818cf8"/>
+              <stop offset="100%" stop-color="#c084fc"/>
+            </linearGradient>
+          </defs>
+          <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="url(#nav-g)" fill-opacity="0.1" stroke="url(#nav-g)" stroke-width="1.9"/>
+          <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="url(#nav-g)" stroke-width="1.9" stroke-linecap="round"/>
+          <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="url(#nav-g)" stroke-width="1.9" stroke-linecap="round"/>
+          <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="url(#nav-g)" stroke-width="1.9" stroke-linecap="round"/>
+          <line x1="21.5" y1="16" x2="27" y2="16" stroke="url(#nav-g)" stroke-width="1.9" stroke-linecap="round"/>
+          <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="url(#nav-g)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       Automation Builder
@@ -428,16 +433,20 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-logo" style="display:flex;align-items:center;gap:8px;">
-      <div style="width:22px;height:22px;border-radius:5px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
-          <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="1.7"/>
-          <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-          <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="ft-g" x1="2" y1="7" x2="30" y2="25" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#818cf8"/>
+            <stop offset="100%" stop-color="#c084fc"/>
+          </linearGradient>
+        </defs>
+        <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="url(#ft-g)" fill-opacity="0.1" stroke="url(#ft-g)" stroke-width="1.9"/>
+        <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="url(#ft-g)" stroke-width="1.9" stroke-linecap="round"/>
+        <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="url(#ft-g)" stroke-width="1.9" stroke-linecap="round"/>
+        <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="url(#ft-g)" stroke-width="1.9" stroke-linecap="round"/>
+        <line x1="21.5" y1="16" x2="27" y2="16" stroke="url(#ft-g)" stroke-width="1.9" stroke-linecap="round"/>
+        <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="url(#ft-g)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
       FlowBuilder
     </div>
     <ul class="footer-links">

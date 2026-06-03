@@ -108,21 +108,20 @@ export default function AuthPage({ onAuth }) {
 
         {/* Logo */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, marginBottom: 26 }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 9,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 22px rgba(99,102,241,0.35)',
-          }}>
-            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-              <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.7"/>
-              <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-              <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-              <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-              <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-              <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+          <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
+            <defs>
+              <linearGradient id="auth-g" x1="2" y1="7" x2="30" y2="25" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#818cf8"/>
+                <stop offset="100%" stopColor="#c084fc"/>
+              </linearGradient>
+            </defs>
+            <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="url(#auth-g)" fillOpacity="0.1" stroke="url(#auth-g)" strokeWidth="1.9"/>
+            <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="url(#auth-g)" strokeWidth="1.9" strokeLinecap="round"/>
+            <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="url(#auth-g)" strokeWidth="1.9" strokeLinecap="round"/>
+            <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="url(#auth-g)" strokeWidth="1.9" strokeLinecap="round"/>
+            <line x1="21.5" y1="16" x2="27" y2="16" stroke="url(#auth-g)" strokeWidth="1.9" strokeLinecap="round"/>
+            <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="url(#auth-g)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
           <div>
             <div style={{
               fontSize: 18, fontWeight: 800, textAlign: 'center',
