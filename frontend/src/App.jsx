@@ -71,6 +71,7 @@ function WorkflowEditor({ user, onLogout }) {
   const configPanelNode = useStore(s => s.configPanelNode);
   const closeConfig = useStore(s => s.closeConfig);
   const fetchWorkflows = useStore(s => s.fetchWorkflows);
+  const loadSampleWorkflow = useStore(s => s.loadSampleWorkflow);
   const history = useStore(s => s.history);
   const historyFuture = useStore(s => s.historyFuture);
 
@@ -249,6 +250,49 @@ function WorkflowEditor({ user, onLogout }) {
               maskColor="rgba(0,0,0,0.6)"
             />
           </ReactFlow>
+          {nodes.length === 0 && (
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 5,
+            }}>
+              <div style={{ pointerEvents: 'all', textAlign: 'center', maxWidth: 360 }}>
+                <div style={{
+                  width: 56, height: 56, margin: '0 auto 20px', borderRadius: 14,
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 0 32px rgba(99,102,241,0.35)',
+                }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                  </svg>
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0', marginBottom: 8, letterSpacing: -0.3 }}>
+                  Start building your workflow
+                </div>
+                <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.7, marginBottom: 24 }}>
+                  Drag nodes from the left panel onto the canvas,<br/>or load a sample workflow to explore.
+                </div>
+                <button
+                  onClick={loadSampleWorkflow}
+                  style={{
+                    fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: '#fff',
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                    border: 'none', borderRadius: 8, padding: '10px 24px', cursor: 'pointer',
+                    boxShadow: '0 0 24px rgba(99,102,241,0.3)',
+                    transition: 'box-shadow 0.2s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 36px rgba(99,102,241,0.5)'}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 24px rgba(99,102,241,0.3)'}
+                >
+                  Load sample workflow
+                </button>
+                <div style={{ fontSize: 11, color: '#1e2a3a', marginTop: 12 }}>
+                  YouTube → Claude AI → Twitter + Telegram
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

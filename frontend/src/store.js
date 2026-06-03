@@ -303,6 +303,49 @@ export const useStore = create(persist((set, get) => ({
     set({ nodes: [], edges: [], workflowId: null, workflowName: 'Untitled Workflow', lastExecution: null, executions: [], configPanelNode: null, history: [], historyFuture: [] });
   },
 
+  loadSampleWorkflow: () => {
+    const nodes = [
+      {
+        id: 'webhook1', type: 'automationNode', position: { x: 60, y: 220 },
+        data: { id:'webhook1', nodeType:'trigger.webhook', label:'Webhook', icon:'🔗', color:'#6366f1',
+          config:{ token:'my-youtube-alert' }, fields:[] }
+      },
+      {
+        id: 'youtube1', type: 'automationNode', position: { x: 320, y: 220 },
+        data: { id:'youtube1', nodeType:'action.youtube_get_video', label:'Get Video', icon:'▶', color:'#ef4444',
+          config:{ video_id:'{{trigger.video_id}}', api_key:'{{env.YOUTUBE_API_KEY}}' }, fields:[] }
+      },
+      {
+        id: 'claude1', type: 'automationNode', position: { x: 580, y: 140 },
+        data: { id:'claude1', nodeType:'action.claude_generate', label:'Claude AI', icon:'◆', color:'#f59e0b',
+          config:{ prompt:'Write a Twitter thread about: {{youtube1.title}} - {{youtube1.description}}', model:'claude-haiku-4-5' }, fields:[] }
+      },
+      {
+        id: 'twitter1', type: 'automationNode', position: { x: 840, y: 140 },
+        data: { id:'twitter1', nodeType:'action.twitter_post_thread', label:'Post Thread', icon:'𝕏', color:'#e2e8f0',
+          config:{ text:'{{claude1.text}}', api_key:'{{env.TWITTER_API_KEY}}' }, fields:[] }
+      },
+      {
+        id: 'claude2', type: 'automationNode', position: { x: 580, y: 320 },
+        data: { id:'claude2', nodeType:'action.claude_generate', label:'Claude AI', icon:'◆', color:'#f59e0b',
+          config:{ prompt:'Write a short Telegram summary (2-3 sentences) about: {{youtube1.title}}', model:'claude-haiku-4-5' }, fields:[] }
+      },
+      {
+        id: 'telegram1', type: 'automationNode', position: { x: 840, y: 320 },
+        data: { id:'telegram1', nodeType:'action.telegram_send_message', label:'Send Message', icon:'✈', color:'#0ea5e9',
+          config:{ bot_token:'{{env.TG_TOKEN}}', chat_id:'{{env.TG_CHAT_ID}}', text:'🎬 New Video: {{youtube1.title}}\n\n{{claude2.text}}' }, fields:[] }
+      },
+    ];
+    const edges = [
+      { id:'e1', source:'webhook1', target:'youtube1', animated:true },
+      { id:'e2', source:'youtube1', target:'claude1', animated:true },
+      { id:'e3', source:'youtube1', target:'claude2', animated:true },
+      { id:'e4', source:'claude1',  target:'twitter1', animated:true },
+      { id:'e5', source:'claude2',  target:'telegram1', animated:true },
+    ];
+    set({ nodes, edges, workflowId:null, workflowName:'YouTube Content Amplifier', lastExecution:null, executions:[], configPanelNode:null, history:[], historyFuture:[] });
+  },
+
   fetchExecutions: async () => {
     const { workflowId } = get();
     if (!workflowId) return;

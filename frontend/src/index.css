@@ -1,8 +1,91 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0f0f1a; color: #f1f5f9; font-family: Inter, system-ui, sans-serif; }
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #ffffff20; border-radius: 4px; }
-.react-flow__controls button { background: #1e1e2e !important; border-color: #ffffff15 !important; color: #f1f5f9 !important; }
-.react-flow__controls button:hover { background: #2e2e3e !important; }
-.react-flow__edge-path { stroke: #6366f1 !important; stroke-width: 2 !important; }
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ─── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #07070f;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.19);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.38);
+}
+
+/* ─── Keyframe Animations ────────────────────────────────── */
+
+/* Node execution ring */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0;   }
+}
+
+/* Button shimmer */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%);  }
+}
+
+/* Fade-in with upward drift */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Loading spinner */
+@keyframes spin {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── ReactFlow Overrides ────────────────────────────────── */
+.react-flow__controls button {
+  background: #0d0d1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  color: #64748b !important;
+  border-radius: 4px !important;
+  transition: background 0.15s, color 0.15s;
+}
+
+.react-flow__controls button:hover {
+  background: #111120 !important;
+  color: #e2e8f0 !important;
+}
+
+.react-flow__edge-path {
+  stroke: #6366f1 !important;
+  stroke-width: 1.5 !important;
+}
+
+.react-flow__edge-path.animated {
+  stroke-dasharray: 5 3;
+}
+
+.react-flow__minimap {
+  border-radius: 4px !important;
+  overflow: hidden;
+}
+
+.react-flow__background {
+  color: #1a1a2e !important;
+}
