@@ -138,8 +138,8 @@ export default function Sidebar({ user, onLogout }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 10 }}>
           {BOTTOM_NAV_IDS.map(id => (
-            <NavBtn key={id} id={id} label={id === 'account' ? (user?.email || t('nav.account', lang)) : t(`nav.${id}`, lang)} icon={NAV_ICONS[id]}>
-              {id === 'account' ? (
+            <NavBtn key={id} id={id} label={id === 'account' ? (user?.email || 'Account') : t(`nav.${id}`, lang)} icon={NAV_ICONS[id]}>
+              {id === 'account' && (
                 <div style={{
                   width: 25, height: 25, borderRadius: '50%',
                   background: active === 'account' ? '#6366f1' : '#1e2a3a',
@@ -150,7 +150,7 @@ export default function Sidebar({ user, onLogout }) {
                 }}>
                   {initial}
                 </div>
-              ) : item.icon}
+              )}
             </NavBtn>
           ))}
         </div>
