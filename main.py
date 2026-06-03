@@ -87,11 +87,20 @@ app.include_router(workflows_router)
 app.include_router(executions_router)
 
 FRONTEND_DIST = Path(__file__).parent / "frontend" / "dist"
+STATIC_DIR = Path(__file__).parent / "static"
 
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/landing")
+def landing():
+    landing_file = STATIC_DIR / "landing.html"
+    if landing_file.exists():
+        return FileResponse(str(landing_file))
+    return {"error": "Landing page not found"}
 
 
 @app.get("/")
