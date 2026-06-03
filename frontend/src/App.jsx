@@ -165,11 +165,13 @@ function WorkflowEditor({ user, onLogout }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 0 10px rgba(99,102,241,0.4)',
             }}>
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.95)"/>
-                <rect x="9" y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
-                <rect x="1.5" y="9" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
-                <rect x="9" y="9" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.35)"/>
+              <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+                <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.7"/>
+                <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0', letterSpacing: -0.2, whiteSpace: 'nowrap' }}>
@@ -357,9 +359,13 @@ function WorkflowEditor({ user, onLogout }) {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   boxShadow: '0 0 32px rgba(99,102,241,0.35)',
                 }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-                    <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                  <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+                    <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.7"/>
+                    <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                    <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                    <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                    <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+                    <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0', marginBottom: 8, letterSpacing: -0.3 }}>

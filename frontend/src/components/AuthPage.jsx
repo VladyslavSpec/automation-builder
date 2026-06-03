@@ -114,11 +114,13 @@ export default function AuthPage({ onAuth }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 0 22px rgba(99,102,241,0.35)',
           }}>
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-              <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.95)"/>
-              <rect x="9"   y="1.5" width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
-              <rect x="1.5" y="9"   width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.6)"/>
-              <rect x="9"   y="9"   width="5.5" height="5.5" rx="1" fill="rgba(255,255,255,0.35)"/>
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+              <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.7"/>
+              <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+              <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+              <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+              <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
+              <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
           <div>
