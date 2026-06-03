@@ -5,22 +5,8 @@
       <stop offset="100%" stop-color="#8b5cf6"/>
     </linearGradient>
   </defs>
-
-  <!-- Background rounded square -->
   <rect width="32" height="32" rx="7" fill="url(#bg)"/>
-
-  <!-- Node body (the automation block) -->
-  <rect x="9.5" y="7" width="12" height="18" rx="2.5"
-        fill="rgba(255,255,255,0.13)" stroke="white" stroke-width="1.7"/>
-
-  <!-- Input connectors — 3 lines entering from the left -->
-  <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-  <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-  <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-
-  <!-- Output connector — line + arrowhead to the right -->
-  <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" stroke-width="1.7" stroke-linecap="round"/>
-  <path d="M25 13.5 L29 16 L25 18.5"
-        fill="none" stroke="white" stroke-width="1.7"
-        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M3 9 Q9 5 16 9 Q23 13 29 9"    stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M3 16 Q9 12 16 16 Q23 20 29 16" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M3 23 Q9 19 16 23 Q23 27 29 23" stroke="white" stroke-width="2.4" fill="none" stroke-linecap="round"/>
 </svg>
