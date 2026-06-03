@@ -13,28 +13,23 @@ export default function AutomationNode({ id, data, selected }) {
 
   const statusColor = {
     success: '#22c55e',
-    failed: '#ef4444',
+    failed:  '#ef4444',
     running: '#f59e0b',
   }[status] || 'transparent';
-
   const statusIcon = { success: '✓', failed: '✗', running: '…' }[status] || '';
 
-  const handleDeleteClick = (e) => {
-    e.stopPropagation();
-    deleteNode(id);
-  };
-
-  const cardBoxShadow = selected
-    ? `0 0 0 3px ${data.color}20, 0 0 20px ${data.color}30, 0 4px 20px #00000090`
+  // Gradient border strength based on state
+  const borderGrad = selected
+    ? `linear-gradient(135deg, ${data.color}cc, ${data.color}44, ${data.color}99)`
     : hovered
-      ? `0 0 0 1px ${data.color}40, 0 4px 16px #00000080`
-      : '0 2px 8px #00000070';
+      ? `linear-gradient(135deg, ${data.color}66, ${data.color}22, ${data.color}44)`
+      : `linear-gradient(135deg, ${data.color}30, ${data.color}0a, ${data.color}20)`;
 
-  const cardBorder = selected
-    ? `1.5px solid ${data.color}`
+  const outerGlow = selected
+    ? `0 0 0 1px ${data.color}30, 0 0 28px ${data.color}50, 0 8px 32px rgba(0,0,0,0.8)`
     : hovered
-      ? `1.5px solid ${data.color}80`
-      : `1.5px solid ${data.color}35`;
+      ? `0 0 0 1px ${data.color}18, 0 0 16px ${data.color}30, 0 4px 20px rgba(0,0,0,0.7)`
+      : `0 4px 16px rgba(0,0,0,0.6)`;
 
   return (
     <div
@@ -42,215 +37,129 @@ export default function AutomationNode({ id, data, selected }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: '#0e0e1c',
-        border: cardBorder,
-        borderRadius: 10,
-        padding: '10px 14px',
-        minWidth: 168,
+        background: borderGrad,
+        borderRadius: 12,
+        padding: 1.5,
+        boxShadow: outerGlow,
+        transition: 'box-shadow 0.2s, background 0.2s',
         cursor: 'pointer',
         position: 'relative',
-        boxShadow: cardBoxShadow,
-        transition: 'all 0.18s',
       }}
     >
-      {/* Status indicator — pulsing ring when running, solid icon badge otherwise */}
-      {status === 'running' && (
-        <>
-          <div
-            className="pulse-ring"
-            style={{
-              position: 'absolute',
-              top: -6,
-              right: -6,
-              width: 20,
-              height: 20,
-              borderRadius: '50%',
-              border: `2px solid ${statusColor}`,
-              pointerEvents: 'none',
-            }}
-          />
-          <div style={{
-            position: 'absolute',
-            top: -6,
-            right: -6,
-            background: statusColor,
-            color: '#fff',
-            borderRadius: '50%',
-            width: 18,
-            height: 18,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 9,
-            fontWeight: 700,
-          }}>
-            {statusIcon}
-          </div>
-        </>
-      )}
-
-      {(status === 'success' || status === 'failed') && (
-        <div style={{
-          position: 'absolute',
-          top: -6,
-          right: -6,
-          background: statusColor,
-          color: '#fff',
-          borderRadius: '50%',
-          width: 18,
-          height: 18,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 9,
-          fontWeight: 700,
-          boxShadow: `0 0 8px ${statusColor}60`,
-        }}>
-          {statusIcon}
-        </div>
-      )}
-
-      {/* Delete button — appears on hover when not executing */}
-      {hovered && !status && (
-        <button
-          onClick={handleDeleteClick}
-          title="Delete node (Del)"
-          style={{
-            position: 'absolute',
-            top: -7,
-            right: -7,
-            width: 18,
-            height: 18,
-            borderRadius: '50%',
-            background: '#0e0e1c',
-            border: '1px solid #ef444455',
-            color: '#ef4444',
-            fontSize: 13,
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            lineHeight: 1,
-            padding: 0,
-            transition: 'background 0.15s, border-color 0.15s',
-            zIndex: 10,
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#ef444420';
-            e.currentTarget.style.borderColor = '#ef4444aa';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#0e0e1c';
-            e.currentTarget.style.borderColor = '#ef444455';
-          }}
-        >
-          ×
-        </button>
-      )}
-
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {/* Icon pill */}
-        <span style={{
-          fontSize: 15,
-          flexShrink: 0,
-          background: `${data.color}20`,
-          border: `1px solid ${data.color}30`,
-          borderRadius: 5,
-          padding: '3px 6px',
-          lineHeight: 1.2,
-          display: 'inline-block',
-        }}>
-          {data.icon}
-        </span>
-
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{
-            color: data.color,
-            fontSize: 8,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.8px',
-            marginBottom: 1,
-          }}>
-            {data.nodeType?.split('.')[0]}
-          </div>
-          <div style={{
-            color: '#e2e8f0',
-            fontSize: 12,
-            fontWeight: 600,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}>
-            {data.label}
-          </div>
-        </div>
-      </div>
-
-      {/* Config preview — first 2 fields */}
-      {data.config && Object.keys(data.config).length > 0 && (
-        <div style={{
-          marginTop: 7,
-          borderTop: `1px solid ${data.color}18`,
-          paddingTop: 6,
-        }}>
-          {Object.entries(data.config).slice(0, 2).map(([k, v]) => (
-            <div
-              key={k}
-              style={{
-                fontSize: 9,
-                color: '#475569',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                lineHeight: 1.6,
-              }}
-            >
-              <span style={{ color: '#334155' }}>{k}:</span>{' '}
-              <span>{String(v).substring(0, 28)}{String(v).length > 28 ? '…' : ''}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Node ID badge */}
+      {/* Inner card */}
       <div style={{
-        position: 'absolute',
-        bottom: 3,
-        right: 7,
-        fontSize: 8,
-        color: `${data.color}25`,
-        fontFamily: 'monospace',
-        letterSpacing: '0.3px',
+        background: 'linear-gradient(145deg, #111120 0%, #0b0b16 100%)',
+        borderRadius: 11,
+        padding: '11px 14px',
+        minWidth: 172,
       }}>
-        {id}
-      </div>
 
-      {/* Handles */}
-      <Handle
-        type="target"
-        position={Position.Left}
-        style={{
-          background: data.color,
-          width: 8,
-          height: 8,
-          border: `2px solid #0e0e1c`,
-          boxShadow: `0 0 6px ${data.color}60`,
-        }}
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        style={{
-          background: data.color,
-          width: 8,
-          height: 8,
-          border: `2px solid #0e0e1c`,
-          boxShadow: `0 0 6px ${data.color}60`,
-        }}
-      />
+        {/* Status: running ring */}
+        {status === 'running' && (
+          <>
+            <div className="pulse-ring" style={{
+              position: 'absolute', top: -8, right: -8,
+              width: 22, height: 22, borderRadius: '50%',
+              border: `2px solid ${statusColor}`, pointerEvents: 'none',
+            }} />
+            <div style={{
+              position: 'absolute', top: -7, right: -7,
+              background: statusColor, color: '#fff', borderRadius: '50%',
+              width: 18, height: 18, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: 9, fontWeight: 700,
+            }}>{statusIcon}</div>
+          </>
+        )}
+
+        {/* Status: success / failed */}
+        {(status === 'success' || status === 'failed') && (
+          <div style={{
+            position: 'absolute', top: -7, right: -7,
+            background: statusColor, color: '#fff', borderRadius: '50%',
+            width: 18, height: 18, display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: 9, fontWeight: 700,
+            boxShadow: `0 0 10px ${statusColor}80`,
+          }}>{statusIcon}</div>
+        )}
+
+        {/* Delete button on hover */}
+        {hovered && !status && (
+          <button
+            onClick={e => { e.stopPropagation(); deleteNode(id); }}
+            title="Delete  (Del)"
+            style={{
+              position: 'absolute', top: -7, right: -7,
+              width: 18, height: 18, borderRadius: '50%',
+              background: '#0b0b16', border: '1px solid #ef444460',
+              color: '#ef4444', fontSize: 13, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', lineHeight: 1, padding: 0, zIndex: 10,
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#ef444425'; e.currentTarget.style.borderColor = '#ef4444aa'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#0b0b16'; e.currentTarget.style.borderColor = '#ef444460'; }}
+          >×</button>
+        )}
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{
+            fontSize: 14, flexShrink: 0,
+            background: `${data.color}20`,
+            border: `1px solid ${data.color}35`,
+            borderRadius: 6, padding: '3px 7px', lineHeight: 1.2,
+            boxShadow: hovered || selected ? `0 0 8px ${data.color}30` : 'none',
+            transition: 'box-shadow 0.2s',
+          }}>{data.icon}</span>
+
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{
+              color: data.color, fontSize: 8, fontWeight: 700,
+              textTransform: 'uppercase', letterSpacing: '0.9px', marginBottom: 2,
+              opacity: 0.85,
+            }}>
+              {data.nodeType?.split('.')[0]}
+            </div>
+            <div style={{
+              color: '#e2e8f0', fontSize: 12, fontWeight: 600,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {data.label}
+            </div>
+          </div>
+        </div>
+
+        {/* Config preview */}
+        {data.config && Object.keys(data.config).length > 0 && (
+          <div style={{ marginTop: 8, borderTop: `1px solid ${data.color}15`, paddingTop: 6 }}>
+            {Object.entries(data.config).slice(0, 2).map(([k, v]) => (
+              <div key={k} style={{
+                fontSize: 9, color: '#3d4f62', overflow: 'hidden',
+                textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.7,
+              }}>
+                <span style={{ color: '#2d3a4a' }}>{k}:</span>{' '}
+                {String(v).substring(0, 26)}{String(v).length > 26 ? '…' : ''}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Node ID */}
+        <div style={{
+          position: 'absolute', bottom: 4, right: 8,
+          fontSize: 8, color: `${data.color}22`, fontFamily: 'monospace',
+        }}>{id}</div>
+
+        {/* Handles */}
+        <Handle type="target" position={Position.Left} style={{
+          background: data.color, width: 9, height: 9,
+          border: '2px solid #0b0b16', boxShadow: `0 0 8px ${data.color}70`,
+        }} />
+        <Handle type="source" position={Position.Right} style={{
+          background: data.color, width: 9, height: 9,
+          border: '2px solid #0b0b16', boxShadow: `0 0 8px ${data.color}70`,
+        }} />
+      </div>
     </div>
   );
 }

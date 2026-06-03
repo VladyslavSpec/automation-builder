@@ -224,7 +224,22 @@ function WorkflowEditor({ user, onLogout }) {
         </div>
 
         {/* Canvas */}
-        <div ref={reactFlowWrapper} style={{ flex: 1, position: 'relative' }}>
+        <div ref={reactFlowWrapper} style={{ flex: 1, position: 'relative', background: '#07070f' }}>
+          {/* Ambient glows */}
+          <div style={{
+            position: 'absolute', top: '15%', left: '25%',
+            width: 500, height: 500, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)',
+            filter: 'blur(70px)', pointerEvents: 'none', zIndex: 0,
+            animation: 'blobFloat1 22s ease-in-out infinite',
+          }} />
+          <div style={{
+            position: 'absolute', bottom: '5%', right: '15%',
+            width: 400, height: 400, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)',
+            filter: 'blur(70px)', pointerEvents: 'none', zIndex: 0,
+            animation: 'blobFloat2 28s ease-in-out infinite',
+          }} />
           <DotBackground />
           <ReactFlow
             nodes={nodes}

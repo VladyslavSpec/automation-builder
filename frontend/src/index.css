@@ -1,13 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* ─── Reset ─────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* ─── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ─── Base ───────────────────────────────────────────────── */
+/* ─── Base ── */
 body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   background: #07070f;
@@ -16,76 +12,120 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Scrollbar ──────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.19);
-  border-radius: 99px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.38);
-}
+/* ─── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.4); }
 
-/* ─── Keyframe Animations ────────────────────────────────── */
-
-/* Node execution ring */
+/* ─── Keyframes ── */
 @keyframes pulse-ring {
-  0%   { transform: scale(1);   opacity: 0.6; }
-  100% { transform: scale(1.5); opacity: 0;   }
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(1.8); opacity: 0; }
 }
 
-/* Button shimmer */
 @keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%);  }
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
 }
 
-/* Fade-in with upward drift */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Loading spinner */
 @keyframes spin {
-  from { transform: rotate(0deg);   }
-  to   { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* ─── ReactFlow Overrides ────────────────────────────────── */
+@keyframes blobFloat1 {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%     { transform: translate(40px,30px) scale(1.04); }
+  66%     { transform: translate(-20px,50px) scale(0.97); }
+}
+
+@keyframes blobFloat2 {
+  0%,100% { transform: translate(0,0); }
+  50%     { transform: translate(-40px,-30px); }
+}
+
+@keyframes blobFloat3 {
+  0%,100% { transform: translate(-50%,-50%); }
+  50%     { transform: translate(calc(-50% + 30px), calc(-50% - 25px)); }
+}
+
+@keyframes dashmove {
+  from { stroke-dashoffset: 20; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes edgePulse {
+  0%,100% { opacity: 0.7; }
+  50%     { opacity: 1; }
+}
+
+/* ─── ReactFlow overrides ── */
+.react-flow__controls {
+  box-shadow: none !important;
+  gap: 4px !important;
+}
+
 .react-flow__controls button {
   background: #0d0d1a !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
   color: #64748b !important;
-  border-radius: 4px !important;
-  transition: background 0.15s, color 0.15s;
+  border-radius: 6px !important;
+  width: 26px !important;
+  height: 26px !important;
+  transition: background 0.15s, color 0.15s !important;
 }
 
 .react-flow__controls button:hover {
   background: #111120 !important;
   color: #e2e8f0 !important;
+  border-color: rgba(99,102,241,0.3) !important;
 }
 
 .react-flow__edge-path {
   stroke: #6366f1 !important;
   stroke-width: 1.5 !important;
+  filter: drop-shadow(0 0 4px rgba(99,102,241,0.55)) !important;
 }
 
-.react-flow__edge-path.animated {
-  stroke-dasharray: 5 3;
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke-dasharray: 6 3 !important;
+  animation: dashmove 0.7s linear infinite, edgePulse 2s ease-in-out infinite !important;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #818cf8 !important;
+  stroke-width: 2 !important;
+  filter: drop-shadow(0 0 8px rgba(129,140,248,0.8)) !important;
+}
+
+.react-flow__connection-path {
+  stroke: #6366f1 !important;
+  stroke-width: 1.5 !important;
 }
 
 .react-flow__minimap {
-  border-radius: 4px !important;
-  overflow: hidden;
+  border-radius: 6px !important;
+  overflow: hidden !important;
 }
 
-.react-flow__background {
-  color: #1a1a2e !important;
+.react-flow__minimap-mask {
+  fill: rgba(0,0,0,0.5) !important;
+}
+
+/* Remove ReactFlow node selection outline — we use our own */
+.react-flow__node:focus { outline: none !important; }
+.react-flow__node.selected > * { outline: none !important; }
+
+/* ─── Ambient blobs (reusable) ── */
+.ambient-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+  will-change: transform;
 }
