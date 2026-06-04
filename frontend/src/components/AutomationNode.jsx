@@ -152,20 +152,20 @@ export default function AutomationNode({ id, data, selected }) {
 
       {/* Handles */}
       <Handle type="target" position={Position.Left} className="automation-handle" style={{
-        background: isActive ? data.color : `${data.color}99`,
-        width: isActive ? 16 : 12, height: isActive ? 16 : 12,
-        border: `2px solid ${isActive ? data.color : '#0d0d1a'}`,
-        boxShadow: isActive ? `0 0 0 3px ${data.color}30, 0 0 12px ${data.color}80` : `0 0 6px ${data.color}50`,
-        left: isActive ? -8 : -6,
+        background: isActive ? data.color : `${data.color}60`,
+        width: isActive ? 10 : 8, height: isActive ? 10 : 8,
+        border: `1.5px solid ${isActive ? `${data.color}90` : '#0d0d1a'}`,
+        boxShadow: isActive ? `0 0 6px ${data.color}40` : 'none',
+        left: isActive ? -5 : -4,
         transition: 'all 0.15s ease',
         cursor: 'crosshair',
       }}/>
       <Handle type="source" position={Position.Right} className="automation-handle" style={{
-        background: isActive ? data.color : `${data.color}99`,
-        width: isActive ? 16 : 12, height: isActive ? 16 : 12,
-        border: `2px solid ${isActive ? data.color : '#0d0d1a'}`,
-        boxShadow: isActive ? `0 0 0 3px ${data.color}30, 0 0 12px ${data.color}80` : `0 0 6px ${data.color}50`,
-        right: isActive ? -8 : -6,
+        background: isActive ? data.color : `${data.color}60`,
+        width: isActive ? 10 : 8, height: isActive ? 10 : 8,
+        border: `1.5px solid ${isActive ? `${data.color}90` : '#0d0d1a'}`,
+        boxShadow: isActive ? `0 0 6px ${data.color}40` : 'none',
+        right: isActive ? -5 : -4,
         transition: 'all 0.15s ease',
         cursor: 'crosshair',
       }}/>

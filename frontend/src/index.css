@@ -17,13 +17,15 @@ body {
   transition: all 0.15s ease !important;
 }
 .react-flow__handle:hover {
-  width: 20px !important;
-  height: 20px !important;
-  box-shadow: 0 0 0 4px rgba(99,102,241,0.25), 0 0 16px rgba(99,102,241,0.6) !important;
-  transform: translate(-50%, -50%) scale(1.15) !important;
+  width: 13px !important;
+  height: 13px !important;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.15), 0 0 8px rgba(99,102,241,0.3) !important;
+}
+.react-flow__handle.target:hover {
+  transform: translate(-50%, -50%) scale(1.1) !important;
 }
 .react-flow__handle.source:hover {
-  transform: translate(50%, -50%) scale(1.15) !important;
+  transform: translate(50%, -50%) scale(1.1) !important;
 }
 
 /* ─── Scrollbar ── */
