@@ -21,9 +21,12 @@ import FlowControls from './components/FlowControls';
 const API = import.meta.env.VITE_API_URL || '';
 const nodeTypes = { automationNode: AutomationNode };
 
+const isMobileDevice = () => window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [isMobile, setIsMobile] = useState(isMobileDevice);
 
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
@@ -53,7 +56,57 @@ export default function App() {
 
   if (!user) return <AuthPage onAuth={handleAuth} />;
 
+  if (isMobile) return <MobileScreen user={user} onLogout={handleLogout} />;
+
   return <WorkflowEditor user={user} onLogout={handleLogout} />;
+}
+
+function MobileScreen({ user, onLogout }) {
+  return (
+    <div style={{ minHeight: '100vh', background: '#07070f', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
+      <div style={{ width: '100%', maxWidth: 340, textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 32 }}>
+          <svg width="36" height="36" viewBox="0 0 32 32" fill="none" style={{ filter: 'drop-shadow(0 0 6px rgba(99,102,241,0.6))' }}>
+            <defs><linearGradient id="mg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#6366f1"/><stop offset="100%" stopColor="#7c3aed"/></linearGradient></defs>
+            <rect width="32" height="32" rx="7" fill="url(#mg)"/>
+            <rect x="9" y="9" width="14" height="14" rx="3" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+            <line x1="3" y1="12" x2="9" y2="12" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <line x1="3" y1="16" x2="9" y2="16" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <line x1="3" y1="20" x2="9" y2="20" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <line x1="23" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <path d="M25 13 L29 16 L25 19" stroke="white" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span style={{ fontSize: 20, fontWeight: 800, background: 'linear-gradient(135deg,#818cf8,#c084fc,#22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Weavo</span>
+        </div>
+
+        {/* Icon */}
+        <div style={{ fontSize: 48, marginBottom: 20 }}>🖥️</div>
+
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9', marginBottom: 10, letterSpacing: -0.3 }}>
+          Open on desktop
+        </div>
+        <div style={{ fontSize: 14, color: '#64748b', lineHeight: 1.7, marginBottom: 32 }}>
+          Weavo's workflow builder is designed for desktop. Open <strong style={{ color: '#94a3b8' }}>weavo.run</strong> on your computer to build automations.
+        </div>
+
+        {/* Account info */}
+        <div style={{ background: '#0c0c18', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '16px 20px', marginBottom: 24, textAlign: 'left' }}>
+          <div style={{ fontSize: 11, color: '#334155', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 }}>Logged in as</div>
+          <div style={{ fontSize: 14, color: '#94a3b8' }}>{user?.email}</div>
+          <div style={{ fontSize: 12, color: '#475569', marginTop: 4 }}>Plan: <span style={{ color: '#818cf8', fontWeight: 600, textTransform: 'capitalize' }}>{user?.plan || 'Free'}</span></div>
+        </div>
+
+        <button
+          onClick={onLogout}
+          style={{ width: '100%', padding: '11px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, background: 'transparent', color: '#475569', fontSize: 13, fontFamily: 'inherit', cursor: 'pointer' }}
+        >
+          Log out
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function WorkflowEditor({ user, onLogout }) {

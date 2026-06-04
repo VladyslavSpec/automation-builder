@@ -254,12 +254,29 @@
       .nav-links { display:none; }
     }
     @media(max-width:640px) {
-      section { padding:72px 20px; }
+      section { padding:64px 18px; }
+      .nav-inner { padding:0 18px; }
+      .btn-ghost { display:none; }
+      .btn-primary { font-size:12px; padding:7px 13px; }
+      .hero-title { letter-spacing:-1px; }
+      .hero-sub { font-size:15px; }
       .hero-ctas { flex-direction:column; }
-      .btn-hero { justify-content:center; }
+      .btn-hero { justify-content:center; width:100%; }
+      .scene-wrap { height:240px; }
+      .section-title { font-size:clamp(24px,7vw,36px); }
+      .section-sub { font-size:14px; }
+      .features-grid { grid-template-columns:1fr; }
+      .feature-card { padding:24px 20px; }
+      .steps-grid { grid-template-columns:1fr; }
+      .step-card { padding:24px 20px; }
       .pricing-grid { grid-template-columns:1fr; max-width:360px; margin:0 auto; }
-      .cta-box { padding:48px 24px; }
-      .footer-inner { flex-direction:column; gap:20px; }
+      .cta-box { padding:40px 20px; }
+      .cta-title { font-size:clamp(22px,6vw,32px); }
+      .cta-sub { font-size:14px; margin-bottom:24px; }
+      .footer-inner { flex-direction:column; text-align:center; gap:16px; }
+      .footer-links { justify-content:center; gap:16px; }
+      #integrations { padding:36px 18px; }
+      .int-chip { font-size:12px; padding:7px 11px; }
     }
   </style>
 </head>
