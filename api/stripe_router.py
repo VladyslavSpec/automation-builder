@@ -80,18 +80,19 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Webhook error")
 
     price_plan_map = _price_plan_map()
-    etype = event["type"]
+    etype = event.type
+    obj = event.data.object
 
     if etype == "checkout.session.completed":
-        sess = event["data"]["object"]
-        user_id = sess.get("metadata", {}).get("user_id")
-        subscription_id = sess.get("subscription")
-        customer_id = sess.get("customer")
+        metadata = getattr(obj, "metadata", None)
+        user_id = getattr(metadata, "user_id", None) if metadata else None
+        subscription_id = getattr(obj, "subscription", None)
+        customer_id = getattr(obj, "customer", None)
 
         plan = "free"
         if subscription_id:
             sub = stripe.Subscription.retrieve(subscription_id)
-            price_id = sub["items"]["data"][0]["price"]["id"]
+            price_id = sub.items.data[0].price.id
             plan = price_plan_map.get(price_id, "free")
 
         if user_id:
@@ -103,21 +104,21 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 db.commit()
 
     elif etype == "customer.subscription.deleted":
-        sub = event["data"]["object"]
-        user = db.query(User).filter_by(stripe_customer_id=sub["customer"]).first()
+        customer_id = getattr(obj, "customer", None)
+        user = db.query(User).filter_by(stripe_customer_id=customer_id).first()
         if user:
             user.plan = "free"
             user.stripe_subscription_id = None
             db.commit()
 
     elif etype == "customer.subscription.updated":
-        sub = event["data"]["object"]
-        price_id = sub["items"]["data"][0]["price"]["id"]
+        price_id = obj.items.data[0].price.id
         plan = price_plan_map.get(price_id, "free")
-        user = db.query(User).filter_by(stripe_customer_id=sub["customer"]).first()
+        customer_id = getattr(obj, "customer", None)
+        user = db.query(User).filter_by(stripe_customer_id=customer_id).first()
         if user:
             user.plan = plan
-            user.stripe_subscription_id = sub["id"]
+            user.stripe_subscription_id = obj.id
             db.commit()
 
     return {"received": True}
