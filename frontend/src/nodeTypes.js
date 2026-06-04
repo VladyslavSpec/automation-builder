@@ -52,6 +52,26 @@ export const NODE_CATALOG = [
     ],
   },
   {
+    category: "Discord",
+    nodes: [
+      { type: "action.discord_send_message", label: "Send Message", color: "#5865F2", icon: "", fields: [{ key: "webhook_url", label: "Webhook URL", placeholder: "https://discord.com/api/webhooks/..." }, { key: "content", label: "Message", placeholder: "New video: {{n1.title}}", textarea: true }, { key: "username", label: "Bot Name", placeholder: "Weavo" }] },
+      { type: "action.discord_send_embed",   label: "Send Embed",   color: "#5865F2", icon: "", fields: [{ key: "webhook_url", label: "Webhook URL", placeholder: "https://discord.com/api/webhooks/..." }, { key: "title", label: "Title", placeholder: "{{n1.title}}" }, { key: "description", label: "Description", placeholder: "{{n1.description}}", textarea: true }, { key: "color", label: "Color (hex)", placeholder: "#5865F2" }, { key: "footer", label: "Footer", placeholder: "Weavo Automation" }, { key: "username", label: "Bot Name", placeholder: "Weavo" }] },
+    ],
+  },
+  {
+    category: "Slack",
+    nodes: [
+      { type: "action.slack_send_message", label: "Send Message", color: "#36C5F0", icon: "", fields: [{ key: "webhook_url", label: "Webhook URL", placeholder: "https://hooks.slack.com/services/..." }, { key: "text", label: "Message", placeholder: "New video: {{n1.title}}", textarea: true }, { key: "username", label: "Bot Name", placeholder: "Weavo" }, { key: "icon_emoji", label: "Emoji Icon", placeholder: ":robot_face:" }] },
+      { type: "action.slack_send_blocks",  label: "Send Blocks",  color: "#36C5F0", icon: "", fields: [{ key: "webhook_url", label: "Webhook URL", placeholder: "https://hooks.slack.com/services/..." }, { key: "title", label: "Title (optional)", placeholder: "📢 New Video" }, { key: "text", label: "Text (Markdown)", placeholder: "*{{n1.title}}*\n{{n1.description}}", textarea: true }, { key: "username", label: "Bot Name", placeholder: "Weavo" }] },
+    ],
+  },
+  {
+    category: "Email",
+    nodes: [
+      { type: "action.email_send", label: "Send Email", color: "#f97316", icon: "", fields: [{ key: "to", label: "To", placeholder: "user@example.com" }, { key: "subject", label: "Subject", placeholder: "{{n1.title}}" }, { key: "body", label: "Body (HTML ok)", placeholder: "<b>{{n1.title}}</b><br>{{n1.description}}", textarea: true }, { key: "from_name", label: "From Name", placeholder: "Weavo" }, { key: "api_key", label: "Resend API Key (optional)", placeholder: "re_... (or set RESEND_API_KEY env)" }] },
+    ],
+  },
+  {
     category: "Logic",
     nodes: [
       { type: "action.log",             label: "Log",          color: "#64748b", icon: "", fields: [{ key: "message", label: "Message", placeholder: "{{n1.title}}", textarea: true }] },

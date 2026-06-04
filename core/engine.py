@@ -12,6 +12,9 @@ from .nodes.ai import ClaudeGenerateNode, OpenAIGenerateNode
 from .nodes.twitter import TwitterPostTweetNode, TwitterPostThreadNode
 from .nodes.notion import NotionCreatePageNode, NotionAppendBlockNode, NotionQueryDatabaseNode
 from .nodes.sheets import SheetsAppendRowNode, SheetsReadRangeNode
+from .nodes.discord import DiscordSendMessageNode, DiscordSendEmbedNode
+from .nodes.slack import SlackSendMessageNode, SlackSendBlocksNode
+from .nodes.email_node import EmailSendNode
 
 NODE_REGISTRY: dict[str, type[BaseNode]] = {
     # Triggers
@@ -45,6 +48,14 @@ NODE_REGISTRY: dict[str, type[BaseNode]] = {
     # Google Sheets
     "action.sheets_append_row": SheetsAppendRowNode,
     "action.sheets_read_range": SheetsReadRangeNode,
+    # Discord
+    "action.discord_send_message": DiscordSendMessageNode,
+    "action.discord_send_embed": DiscordSendEmbedNode,
+    # Slack
+    "action.slack_send_message": SlackSendMessageNode,
+    "action.slack_send_blocks": SlackSendBlocksNode,
+    # Email
+    "action.email_send": EmailSendNode,
 }
 
 

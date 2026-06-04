@@ -180,6 +180,51 @@ const P = {
     </>
   ),
 
+  'action.discord_send_message': () => (
+    <>
+      <path d="M13 2H3a1 1 0 00-1 1v8a1 1 0 001 1h2v2l3-2h5a1 1 0 001-1V3a1 1 0 00-1-1Z"/>
+      <circle cx="5.5" cy="7" r="1" fill="currentColor" stroke="none"/>
+      <circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/>
+      <circle cx="10.5" cy="7" r="1" fill="currentColor" stroke="none"/>
+    </>
+  ),
+
+  'action.discord_send_embed': () => (
+    <>
+      <path d="M13 2H3a1 1 0 00-1 1v8a1 1 0 001 1h2v2l3-2h5a1 1 0 001-1V3a1 1 0 00-1-1Z"/>
+      <line x1="4.5" y1="5" x2="4.5" y2="9" strokeWidth="2"/>
+      <line x1="6.5" y1="5.5" x2="11" y2="5.5"/>
+      <line x1="6.5" y1="8" x2="11" y2="8"/>
+    </>
+  ),
+
+  'action.slack_send_message': () => (
+    <>
+      <rect x="1.5" y="1.5" width="13" height="13" rx="3"/>
+      <line x1="5.5" y1="4.5" x2="5.5" y2="11.5"/>
+      <line x1="10.5" y1="4.5" x2="10.5" y2="11.5"/>
+      <line x1="3.5" y1="7" x2="12.5" y2="7"/>
+      <line x1="3.5" y1="9.5" x2="12.5" y2="9.5"/>
+    </>
+  ),
+
+  'action.slack_send_blocks': () => (
+    <>
+      <rect x="1.5" y="1.5" width="13" height="13" rx="3"/>
+      <line x1="4.5" y1="5" x2="4.5" y2="11" strokeWidth="2"/>
+      <line x1="7" y1="5.5" x2="12" y2="5.5"/>
+      <line x1="7" y1="8" x2="12" y2="8"/>
+      <line x1="7" y1="10.5" x2="10" y2="10.5"/>
+    </>
+  ),
+
+  'action.email_send': () => (
+    <>
+      <rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/>
+      <path d="M1.5 5l6.5 4.5L14.5 5"/>
+    </>
+  ),
+
   default: () => (
     <>
       <circle cx="8" cy="8" r="5.5"/>

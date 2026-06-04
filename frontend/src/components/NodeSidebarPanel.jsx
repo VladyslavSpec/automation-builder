@@ -13,6 +13,9 @@ const CATEGORY_ICONS = {
   'Notion':   { color: '#f59e0b', dot: '#f59e0b' },
   'Google Sheets': { color: '#22c55e', dot: '#22c55e' },
   'Logic':    { color: '#64748b', dot: '#64748b' },
+  'Discord':  { color: '#5865F2', dot: '#5865F2' },
+  'Slack':    { color: '#36C5F0', dot: '#36C5F0' },
+  'Email':    { color: '#f97316', dot: '#f97316' },
 };
 
 export default function NodeSidebarPanel() {
