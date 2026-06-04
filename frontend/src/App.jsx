@@ -189,6 +189,13 @@ function WorkflowEditor({ user, onLogout }) {
             <span style={{ fontSize: 13, fontWeight: 800, background: 'linear-gradient(135deg,#818cf8,#c084fc,#22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Weavo</span>
           </div>
 
+          {/* Back to landing */}
+          <a href="/landing" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#475569', textDecoration: 'none', padding: '3px 7px', borderRadius: 4, border: '1px solid #ffffff08', flexShrink: 0 }}
+             onMouseEnter={e => e.currentTarget.style.color='#94a3b8'}
+             onMouseLeave={e => e.currentTarget.style.color='#475569'}>
+            ← Home
+          </a>
+
           {/* Divider */}
           <div style={{ width: 1, height: 18, background: '#ffffff10', flexShrink: 0 }}/>
 
