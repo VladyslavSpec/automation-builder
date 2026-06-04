@@ -108,23 +108,24 @@ export default function AuthPage({ onAuth }) {
 
         {/* Logo */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, marginBottom: 26 }}>
-          <svg width="56" height="40" viewBox="0 0 28 21" fill="none"
-               style={{ filter: 'drop-shadow(0 0 4px rgba(129,140,248,0.7)) drop-shadow(0 0 10px rgba(192,132,252,0.4))' }}>
+          <svg width="56" height="56" viewBox="0 0 32 32" fill="none"
+               style={{ filter: 'drop-shadow(0 0 8px rgba(99,102,241,0.7)) drop-shadow(0 0 20px rgba(124,58,237,0.4))' }}>
             <defs>
-              <linearGradient id="auth-g" x1="0" y1="0" x2="28" y2="21" gradientUnits="userSpaceOnUse">
-                <stop offset="0%"   stopColor="#818cf8"/>
-                <stop offset="45%"  stopColor="#c084fc"/>
-                <stop offset="100%" stopColor="#22d3ee"/>
+              <linearGradient id="auth-g" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#6366f1"/>
+                <stop offset="100%" stopColor="#7c3aed"/>
               </linearGradient>
             </defs>
-            <polyline points="2,2 7,16 14,8 21,16 26,6"
-                      stroke="url(#auth-g)" strokeWidth="1.8" fill="none"
-                      strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="2"  cy="2"  r="2.1" fill="#818cf8"/>
-            <circle cx="7"  cy="16" r="2.1" fill="#9d7afe"/>
-            <circle cx="14" cy="8"  r="2.4" fill="#c084fc"/>
-            <circle cx="21" cy="16" r="2.1" fill="#9dd8fa"/>
-            <circle cx="26" cy="6"  r="2.1" fill="#22d3ee"/>
+            <rect width="32" height="32" rx="8" fill="url(#auth-g)"/>
+            <rect x="11" y="10" width="10" height="12" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.8"/>
+            <line x1="6" y1="13" x2="11" y2="13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+            <line x1="6" y1="16" x2="11" y2="16" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+            <line x1="6" y1="19" x2="11" y2="19" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+            <circle cx="6" cy="13" r="1.3" fill="white" opacity="0.8"/>
+            <circle cx="6" cy="16" r="1.3" fill="white" opacity="0.8"/>
+            <circle cx="6" cy="19" r="1.3" fill="white" opacity="0.8"/>
+            <line x1="21" y1="16" x2="24" y2="16" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
+            <path d="M23 13.5 L26.5 16 L23 18.5" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <div>
             <div style={{
