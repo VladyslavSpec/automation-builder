@@ -1,5 +1,6 @@
 import re
 import secrets
+import resend
 from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -9,6 +10,8 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from datetime import datetime, timezone, timedelta
 import os
+
+resend.api_key = os.getenv("RESEND_API_KEY", "")
 
 from database import get_db
 from models import User, Workflow, WorkflowExecution
@@ -194,9 +197,46 @@ def forgot_password(request: Request, body: ForgotPasswordRequest, db: Session =
         user.reset_token = token
         user.reset_token_expires = datetime.now(timezone.utc) + timedelta(hours=1)
         db.commit()
+
+        reset_url = f"https://weavo.run/reset-password.html?token={token}"
         if not IS_PROD:
-            print(f"[DEV] Reset token for {user.email}: {token}")
-            print(f"[DEV] Reset URL: http://localhost:8002/reset-password.html?token={token}")
+            reset_url = f"http://localhost:8002/reset-password.html?token={token}"
+
+        if resend.api_key:
+            try:
+                resend.Emails.send({
+                    "from": "Weavo <noreply@weavo.run>",
+                    "to": user.email,
+                    "subject": "Reset your Weavo password",
+                    "html": f"""
+                    <div style="font-family:Inter,system-ui,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0b0b1c;color:#e2e8f0;border-radius:12px;">
+                      <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs>
+                          <rect width="32" height="32" rx="7" fill="url(#g)"/>
+                          <rect x="9" y="9" width="14" height="14" rx="3" fill="rgba(255,255,255,0.18)" stroke="white" stroke-width="2"/>
+                          <line x1="3" y1="12" x2="9" y2="12" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                          <line x1="3" y1="16" x2="9" y2="16" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                          <line x1="3" y1="20" x2="9" y2="20" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                          <line x1="23" y1="16" x2="27" y2="16" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+                          <path d="M25 13 L29 16 L25 19" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span style="font-size:18px;font-weight:800;background:linear-gradient(135deg,#818cf8,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Weavo</span>
+                      </div>
+                      <h2 style="color:#f1f5f9;margin:0 0 12px;font-size:20px;">Reset your password</h2>
+                      <p style="color:#94a3b8;margin:0 0 24px;line-height:1.6;">We received a request to reset the password for your Weavo account. Click the button below — the link expires in <strong style="color:#e2e8f0;">1 hour</strong>.</p>
+                      <a href="{reset_url}" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Reset Password</a>
+                      <p style="color:#334155;margin-top:24px;font-size:12px;line-height:1.6;">If you didn't request this, you can safely ignore this email. Your password won't change.</p>
+                      <hr style="border:none;border-top:1px solid #1e2a3a;margin:24px 0;"/>
+                      <p style="color:#1e2a3a;font-size:11px;">© 2026 Weavo · <a href="https://weavo.run" style="color:#334155;">weavo.run</a></p>
+                    </div>
+                    """,
+                })
+            except Exception as e:
+                print(f"[EMAIL ERROR] {e}")
+        else:
+            print(f"[DEV] Reset URL: {reset_url}")
+
     return {"message": "If that email is registered, a reset link has been sent."}
 
 
