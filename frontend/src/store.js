@@ -247,7 +247,7 @@ export const useStore = create(persist((set, get) => ({
   _buildDefinition: () => {
     const { nodes, edges } = get();
     return {
-      nodes: nodes.map(n => ({ id: n.id, type: n.data.nodeType, config: n.data.config, position: n.position })),
+      nodes: nodes.map(n => ({ id: n.id, type: n.data.nodeType, label: n.data.label, color: n.data.color, fields: n.data.fields, config: n.data.config, position: n.position })),
       connections: edges.map(e => ({ from: e.source, to: e.target })),
     };
   },
