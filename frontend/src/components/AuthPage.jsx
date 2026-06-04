@@ -108,18 +108,23 @@ export default function AuthPage({ onAuth }) {
 
         {/* Logo */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 9, marginBottom: 26 }}>
-          <svg width="58" height="40" viewBox="0 0 32 22" fill="none"
-               style={{ filter: 'drop-shadow(0 0 5px rgba(129,140,248,1)) drop-shadow(0 0 14px rgba(192,132,252,0.8)) drop-shadow(0 0 28px rgba(34,211,238,0.35))' }}>
+          <svg width="56" height="40" viewBox="0 0 28 21" fill="none"
+               style={{ filter: 'drop-shadow(0 0 4px rgba(129,140,248,0.7)) drop-shadow(0 0 10px rgba(192,132,252,0.4))' }}>
             <defs>
-              <linearGradient id="auth-g" x1="0" y1="0" x2="32" y2="22" gradientUnits="userSpaceOnUse">
+              <linearGradient id="auth-g" x1="0" y1="0" x2="28" y2="21" gradientUnits="userSpaceOnUse">
                 <stop offset="0%"   stopColor="#818cf8"/>
-                <stop offset="55%"  stopColor="#c084fc"/>
+                <stop offset="45%"  stopColor="#c084fc"/>
                 <stop offset="100%" stopColor="#22d3ee"/>
               </linearGradient>
             </defs>
-            <path d="M1 4 Q8.5 0 16 4 Q23.5 8 31 4"    stroke="url(#auth-g)" strokeWidth="2.4" fill="none" strokeLinecap="round"/>
-            <path d="M1 11 Q8.5 7 16 11 Q23.5 15 31 11"  stroke="url(#auth-g)" strokeWidth="2.4" fill="none" strokeLinecap="round"/>
-            <path d="M1 18 Q8.5 14 16 18 Q23.5 22 31 18" stroke="url(#auth-g)" strokeWidth="2.4" fill="none" strokeLinecap="round"/>
+            <polyline points="2,2 7,16 14,8 21,16 26,6"
+                      stroke="url(#auth-g)" strokeWidth="1.8" fill="none"
+                      strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="2"  cy="2"  r="2.1" fill="#818cf8"/>
+            <circle cx="7"  cy="16" r="2.1" fill="#9d7afe"/>
+            <circle cx="14" cy="8"  r="2.4" fill="#c084fc"/>
+            <circle cx="21" cy="16" r="2.1" fill="#9dd8fa"/>
+            <circle cx="26" cy="6"  r="2.1" fill="#22d3ee"/>
           </svg>
           <div>
             <div style={{
