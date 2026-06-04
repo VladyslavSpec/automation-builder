@@ -16,6 +16,9 @@ const CATEGORY_ICONS = {
   'Discord':  { color: '#5865F2', dot: '#5865F2' },
   'Slack':    { color: '#36C5F0', dot: '#36C5F0' },
   'Email':    { color: '#f97316', dot: '#f97316' },
+  'WhatsApp': { color: '#25D366', dot: '#25D366' },
+  'Reddit':   { color: '#FF4500', dot: '#FF4500' },
+  'Threads':  { color: '#94a3b8', dot: '#94a3b8' },
 };
 
 export default function NodeSidebarPanel() {

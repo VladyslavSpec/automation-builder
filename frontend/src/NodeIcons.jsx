@@ -225,6 +225,54 @@ const P = {
     </>
   ),
 
+  'action.whatsapp_send_message': () => (
+    <>
+      <circle cx="8" cy="8" r="6.5"/>
+      <path d="M5.5 10.5c1 .5 2 .5 3 0s1.5-1.5 1.5-2.5a2.5 2.5 0 00-5 0c0 .5.1 1 .3 1.4L5 12l2.1-.3"/>
+    </>
+  ),
+
+  'action.whatsapp_send_template': () => (
+    <>
+      <circle cx="8" cy="8" r="6.5"/>
+      <path d="M5.5 6.5h5M5.5 8.5h5M5.5 10.5h3"/>
+    </>
+  ),
+
+  'action.reddit_post': () => (
+    <>
+      <circle cx="8" cy="8" r="6.5"/>
+      <circle cx="5.5" cy="7.5" r="1" fill="currentColor" stroke="none"/>
+      <circle cx="10.5" cy="7.5" r="1" fill="currentColor" stroke="none"/>
+      <path d="M5.5 10.5q2.5 2 5 0"/>
+      <path d="M10 2.5l1.5 2-1.5.5"/>
+      <circle cx="12" cy="2.5" r="1" fill="currentColor" stroke="none"/>
+    </>
+  ),
+
+  'action.reddit_comment': () => (
+    <>
+      <path d="M2 3h12a1 1 0 011 1v7a1 1 0 01-1 1H9l-3 2v-2H2a1 1 0 01-1-1V4a1 1 0 011-1Z"/>
+      <line x1="4.5" y1="7" x2="11.5" y2="7"/>
+      <line x1="4.5" y1="9.5" x2="9" y2="9.5"/>
+    </>
+  ),
+
+  'action.threads_post': () => (
+    <>
+      <path d="M11 4.5C9.5 3.5 7 3 5.5 4.5S4 8.5 5.5 10s4 2 5.5.5 2-4.5.5-6.5"/>
+      <path d="M8 7v5.5"/>
+    </>
+  ),
+
+  'action.threads_post_image': () => (
+    <>
+      <path d="M11 4.5C9.5 3.5 7 3 5.5 4.5S4 8.5 5.5 10s4 2 5.5.5 2-4.5.5-6.5"/>
+      <rect x="3" y="9" width="6" height="5" rx="1"/>
+      <path d="M3 11.5l1.5-1.5 1.5 1.5L7.5 10l1.5 2"/>
+    </>
+  ),
+
   default: () => (
     <>
       <circle cx="8" cy="8" r="5.5"/>

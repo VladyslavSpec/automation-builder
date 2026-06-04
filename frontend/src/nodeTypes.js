@@ -72,6 +72,27 @@ export const NODE_CATALOG = [
     ],
   },
   {
+    category: "WhatsApp",
+    nodes: [
+      { type: "action.whatsapp_send_message",  label: "Send Message",  color: "#25D366", icon: "", fields: [{ key: "phone_number_id", label: "Phone Number ID", placeholder: "1234567890" }, { key: "access_token", label: "Access Token", placeholder: "EAAx..." }, { key: "to", label: "Recipient Phone", placeholder: "+14155552671" }, { key: "message", label: "Message", placeholder: "Hello {{n1.title}}", textarea: true }] },
+      { type: "action.whatsapp_send_template", label: "Send Template", color: "#25D366", icon: "", fields: [{ key: "phone_number_id", label: "Phone Number ID", placeholder: "1234567890" }, { key: "access_token", label: "Access Token", placeholder: "EAAx..." }, { key: "to", label: "Recipient Phone", placeholder: "+14155552671" }, { key: "template_name", label: "Template Name", placeholder: "hello_world" }, { key: "language_code", label: "Language", placeholder: "en_US" }] },
+    ],
+  },
+  {
+    category: "Reddit",
+    nodes: [
+      { type: "action.reddit_post",    label: "Submit Post",   color: "#FF4500", icon: "", fields: [{ key: "client_id", label: "Client ID", placeholder: "your_client_id" }, { key: "client_secret", label: "Client Secret", placeholder: "your_secret" }, { key: "username", label: "Reddit Username", placeholder: "your_username" }, { key: "password", label: "Password", placeholder: "your_password" }, { key: "subreddit", label: "Subreddit", placeholder: "r/test" }, { key: "title", label: "Title", placeholder: "{{n1.title}}" }, { key: "text", label: "Body", placeholder: "{{n1.description}}", textarea: true }] },
+      { type: "action.reddit_comment", label: "Post Comment",  color: "#FF4500", icon: "", fields: [{ key: "client_id", label: "Client ID", placeholder: "your_client_id" }, { key: "client_secret", label: "Client Secret", placeholder: "your_secret" }, { key: "username", label: "Reddit Username", placeholder: "your_username" }, { key: "password", label: "Password", placeholder: "your_password" }, { key: "thing_id", label: "Post ID (t3_xxx)", placeholder: "t3_abc123" }, { key: "text", label: "Comment Text", placeholder: "{{n2.text}}", textarea: true }] },
+    ],
+  },
+  {
+    category: "Threads",
+    nodes: [
+      { type: "action.threads_post",       label: "Post Text",  color: "#000000", icon: "", fields: [{ key: "user_id", label: "User ID", placeholder: "your_threads_user_id" }, { key: "access_token", label: "Access Token", placeholder: "your_access_token" }, { key: "text", label: "Post Text", placeholder: "{{n1.title}}\n\n{{n1.description}}", textarea: true }] },
+      { type: "action.threads_post_image", label: "Post Image", color: "#000000", icon: "", fields: [{ key: "user_id", label: "User ID", placeholder: "your_threads_user_id" }, { key: "access_token", label: "Access Token", placeholder: "your_access_token" }, { key: "image_url", label: "Image URL", placeholder: "{{n1.thumbnail_url}}" }, { key: "text", label: "Caption (optional)", placeholder: "{{n1.title}}", textarea: true }] },
+    ],
+  },
+  {
     category: "Logic",
     nodes: [
       { type: "action.log",             label: "Log",          color: "#64748b", icon: "", fields: [{ key: "message", label: "Message", placeholder: "{{n1.title}}", textarea: true }] },

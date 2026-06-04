@@ -15,6 +15,9 @@ from .nodes.sheets import SheetsAppendRowNode, SheetsReadRangeNode
 from .nodes.discord import DiscordSendMessageNode, DiscordSendEmbedNode
 from .nodes.slack import SlackSendMessageNode, SlackSendBlocksNode
 from .nodes.email_node import EmailSendNode
+from .nodes.whatsapp import WhatsAppSendMessageNode, WhatsAppSendTemplateNode
+from .nodes.reddit import RedditPostNode, RedditCommentNode
+from .nodes.threads import ThreadsPostNode, ThreadsPostImageNode
 
 NODE_REGISTRY: dict[str, type[BaseNode]] = {
     # Triggers
@@ -56,6 +59,15 @@ NODE_REGISTRY: dict[str, type[BaseNode]] = {
     "action.slack_send_blocks": SlackSendBlocksNode,
     # Email
     "action.email_send": EmailSendNode,
+    # WhatsApp
+    "action.whatsapp_send_message": WhatsAppSendMessageNode,
+    "action.whatsapp_send_template": WhatsAppSendTemplateNode,
+    # Reddit
+    "action.reddit_post": RedditPostNode,
+    "action.reddit_comment": RedditCommentNode,
+    # Threads
+    "action.threads_post": ThreadsPostNode,
+    "action.threads_post_image": ThreadsPostImageNode,
 }
 
 
