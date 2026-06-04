@@ -153,19 +153,12 @@ function WorkflowEditor({ user, onLogout }) {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Topbar */}
         <div style={{
-          position: 'relative', height: 44, background: '#0e0e1e',
-          boxShadow: 'inset 0 -1px 0 #ffffff10',
-          display: 'flex', alignItems: 'center', padding: '0 12px', gap: 8, flexShrink: 0,
+          position: 'relative', height: 56, background: '#0e0e1e',
+          borderRadius: '0 0 50% 50% / 0 0 22px 22px',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.35), 0 1px 0 #ffffff12',
+          display: 'flex', alignItems: 'flex-start', paddingTop: 6, padding: '6px 12px 0', gap: 8, flexShrink: 0,
           zIndex: 10,
         }}>
-          {/* Puzzle tab */}
-          <div style={{
-            position: 'absolute', bottom: -10, left: '50%', transform: 'translateX(-50%)',
-            width: 52, height: 10, background: '#0e0e1e',
-            borderRadius: '0 0 26px 26px',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.25), inset 0 -1px 0 #ffffff08',
-            pointerEvents: 'none',
-          }}/>
           {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 4, flexShrink: 0 }}>
             <svg width="28" height="20" viewBox="0 0 28 21" fill="none"
