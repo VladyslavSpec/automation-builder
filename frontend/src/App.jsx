@@ -170,15 +170,15 @@ function WorkflowEditor({ user, onLogout }) {
                 </linearGradient>
               </defs>
               <rect width="32" height="32" rx="7" fill="url(#top-g)"/>
-              <rect x="11" y="10" width="10" height="12" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.8"/>
-              <line x1="6" y1="13" x2="11" y2="13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-              <line x1="6" y1="16" x2="11" y2="16" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-              <line x1="6" y1="19" x2="11" y2="19" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-              <circle cx="6" cy="13" r="1.3" fill="white" opacity="0.8"/>
-              <circle cx="6" cy="16" r="1.3" fill="white" opacity="0.8"/>
-              <circle cx="6" cy="19" r="1.3" fill="white" opacity="0.8"/>
-              <line x1="21" y1="16" x2="24" y2="16" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-              <path d="M23 13.5 L26.5 16 L23 18.5" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="9" y="9" width="14" height="14" rx="3" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+              <line x1="3" y1="12" x2="9" y2="12" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+              <line x1="3" y1="16" x2="9" y2="16" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+              <line x1="3" y1="20" x2="9" y2="20" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+              <circle cx="3" cy="12" r="1.4" fill="white" opacity="0.8"/>
+              <circle cx="3" cy="16" r="1.4" fill="white" opacity="0.8"/>
+              <circle cx="3" cy="20" r="1.4" fill="white" opacity="0.8"/>
+              <line x1="23" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+              <path d="M25 13 L29 16 L25 19" stroke="white" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span style={{ fontSize: 13, fontWeight: 800, background: 'linear-gradient(135deg,#818cf8,#c084fc,#22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Weavo</span>
           </div>
@@ -365,18 +365,21 @@ function WorkflowEditor({ user, onLogout }) {
             }}>
               <div style={{ pointerEvents: 'all', textAlign: 'center', maxWidth: 360 }}>
                 <div style={{
-                  width: 56, height: 56, margin: '0 auto 20px', borderRadius: 14,
-                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  width: 72, height: 72, margin: '0 auto 20px', borderRadius: 18,
+                  background: 'linear-gradient(135deg, #6366f1, #7c3aed)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 0 32px rgba(99,102,241,0.35)',
+                  boxShadow: '0 0 40px rgba(99,102,241,0.45), 0 0 80px rgba(124,58,237,0.2)',
                 }}>
-                  <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-                    <rect x="9.5" y="7" width="12" height="18" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.7"/>
-                    <line x1="2.5" y1="11.5" x2="9.5" y2="11.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-                    <line x1="2.5" y1="16"   x2="9.5" y2="16"   stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-                    <line x1="2.5" y1="20.5" x2="9.5" y2="20.5" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-                    <line x1="21.5" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.7" strokeLinecap="round"/>
-                    <path d="M25 13.5 L29 16 L25 18.5" fill="none" stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg width="46" height="46" viewBox="0 0 32 32" fill="none">
+                    <rect x="8" y="9" width="14" height="14" rx="3" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+                    <line x1="3" y1="12" x2="8" y2="12" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                    <line x1="3" y1="16" x2="8" y2="16" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                    <line x1="3" y1="20" x2="8" y2="20" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                    <circle cx="3" cy="12" r="1.5" fill="white" opacity="0.8"/>
+                    <circle cx="3" cy="16" r="1.5" fill="white" opacity="0.8"/>
+                    <circle cx="3" cy="20" r="1.5" fill="white" opacity="0.8"/>
+                    <line x1="22" y1="16" x2="26" y2="16" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+                    <path d="M24 13 L29 16 L24 19" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0', marginBottom: 8, letterSpacing: -0.3 }}>

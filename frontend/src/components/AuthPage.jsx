@@ -117,15 +117,15 @@ export default function AuthPage({ onAuth }) {
               </linearGradient>
             </defs>
             <rect width="32" height="32" rx="8" fill="url(#auth-g)"/>
-            <rect x="11" y="10" width="10" height="12" rx="2.5" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.8"/>
-            <line x1="6" y1="13" x2="11" y2="13" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-            <line x1="6" y1="16" x2="11" y2="16" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-            <line x1="6" y1="19" x2="11" y2="19" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-            <circle cx="6" cy="13" r="1.3" fill="white" opacity="0.8"/>
-            <circle cx="6" cy="16" r="1.3" fill="white" opacity="0.8"/>
-            <circle cx="6" cy="19" r="1.3" fill="white" opacity="0.8"/>
-            <line x1="21" y1="16" x2="24" y2="16" stroke="white" strokeWidth="1.4" strokeLinecap="round"/>
-            <path d="M23 13.5 L26.5 16 L23 18.5" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="9" y="9" width="14" height="14" rx="3" fill="rgba(255,255,255,0.18)" stroke="white" strokeWidth="2"/>
+            <line x1="3" y1="12" x2="9" y2="12" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <line x1="3" y1="16" x2="9" y2="16" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <line x1="3" y1="20" x2="9" y2="20" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <circle cx="3" cy="12" r="1.4" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="16" r="1.4" fill="white" opacity="0.8"/>
+            <circle cx="3" cy="20" r="1.4" fill="white" opacity="0.8"/>
+            <line x1="23" y1="16" x2="27" y2="16" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <path d="M25 13 L29 16 L25 19" stroke="white" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <div>
             <div style={{
