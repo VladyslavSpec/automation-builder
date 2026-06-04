@@ -30,6 +30,8 @@ class User(Base):
     api_keys = Column(JSON, default=dict)
     stripe_customer_id = Column(String, nullable=True)
     stripe_subscription_id = Column(String, nullable=True)
+    reset_token = Column(String, nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
 
     workflows = relationship("Workflow", back_populates="user")
 

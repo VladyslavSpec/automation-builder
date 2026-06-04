@@ -1,16 +1,20 @@
 import re
-from fastapi import APIRouter, Depends, HTTPException, Request
+import secrets
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from pydantic import BaseModel
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import os
 
 from database import get_db
 from models import User, Workflow, WorkflowExecution
 from core.auth import hash_password, verify_password, create_access_token, decode_token
+
+IS_PROD = bool(os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("DATABASE_URL", "").startswith("postgresql"))
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -40,6 +44,8 @@ class RegisterRequest(BaseModel):
 @limiter.limit("5/minute")
 def register(request: Request, body: RegisterRequest, db: Session = Depends(get_db)):
     email = body.email.lower().strip()
+    if len(email) > 254:
+        raise HTTPException(status_code=400, detail="Email too long")
     if not EMAIL_RE.match(email):
         raise HTTPException(status_code=400, detail="Invalid email format")
     if len(body.password) < 8:
@@ -59,13 +65,19 @@ def register(request: Request, body: RegisterRequest, db: Session = Depends(get_
 
 @router.post("/login")
 @limiter.limit("10/minute")
-def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    remember_me: bool = Query(False),
+    db: Session = Depends(get_db),
+):
     email = form_data.username.lower().strip()
     user = db.query(User).filter_by(email=email, is_active=True).first()
     if not user or not user.password_hash or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    return {"access_token": create_access_token(user.id), "token_type": "bearer"}
+    expire_days = 30 if remember_me else 7
+    return {"access_token": create_access_token(user.id, expire_days=expire_days), "token_type": "bearer"}
 
 
 @router.get("/me")
@@ -166,3 +178,45 @@ def change_password(
     current_user.password_hash = hash_password(body.new_password)
     db.commit()
     return {"changed": True}
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+@router.post("/forgot-password")
+@limiter.limit("3/minute")
+def forgot_password(request: Request, body: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    email = body.email.lower().strip()
+    user = db.query(User).filter_by(email=email, is_active=True).first()
+    if user:
+        token = secrets.token_urlsafe(32)
+        user.reset_token = token
+        user.reset_token_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+        db.commit()
+        if not IS_PROD:
+            print(f"[DEV] Reset token for {user.email}: {token}")
+            print(f"[DEV] Reset URL: http://localhost:8002/reset-password.html?token={token}")
+    return {"message": "If that email is registered, a reset link has been sent."}
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+@router.post("/reset-password")
+@limiter.limit("5/minute")
+def reset_password(request: Request, body: ResetPasswordRequest, db: Session = Depends(get_db)):
+    if len(body.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    user = db.query(User).filter_by(reset_token=body.token).first()
+    if not user or not user.reset_token_expires:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset link")
+    if user.reset_token_expires.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Reset link has expired")
+    user.password_hash = hash_password(body.new_password)
+    user.reset_token = None
+    user.reset_token_expires = None
+    db.commit()
+    return {"message": "Password updated successfully"}

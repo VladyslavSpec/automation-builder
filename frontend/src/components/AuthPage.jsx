@@ -10,12 +10,32 @@ export default function AuthPage({ onAuth }) {
   const [confirmPassword, setConfirm]     = useState('');
   const [agreeTerms, setAgreeTerms]       = useState(false);
   const [agreePrivacy, setAgreePrivacy]   = useState(false);
+  const [rememberMe, setRememberMe]       = useState(false);
   const [error, setError]                 = useState('');
   const [loading, setLoading]             = useState(false);
   const [focusField, setFocus]            = useState(null);
   const [btnHover, setBtnHover]           = useState(false);
+  const [view, setView]                   = useState('auth'); // 'auth' | 'forgot' | 'forgot-sent'
+  const [forgotEmail, setForgotEmail]     = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   const switchTab = (t) => { setTab(t); setError(''); setConfirm(''); setAgreeTerms(false); setAgreePrivacy(false); };
+  const goForgot = () => { setView('forgot'); setForgotEmail(email); setError(''); };
+  const backToLogin = () => { setView('auth'); setError(''); };
+
+  const handleForgot = async (e) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setError('');
+    try {
+      await axios.post(`${API}/auth/forgot-password`, { email: forgotEmail });
+      setView('forgot-sent');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Something went wrong. Try again.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +56,8 @@ export default function AuthPage({ onAuth }) {
         const params = new URLSearchParams();
         params.append('username', email);
         params.append('password', password);
-        const res = await axios.post(`${API}/auth/login`, params);
+        const loginUrl = `${API}/auth/login${rememberMe ? '?remember_me=true' : ''}`;
+        const res = await axios.post(loginUrl, params);
         onAuth(res.data.access_token);
       }
     } catch (err) {
@@ -91,8 +112,45 @@ export default function AuthPage({ onAuth }) {
         filter: 'blur(60px)', pointerEvents: 'none',
       }}/>
 
-      {/* Card */}
-      <div style={{
+      {/* Forgot password card */}
+      {view === 'forgot' && (
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420, background: '#0c0c18', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '34px 30px 28px', boxShadow: '0 32px 80px rgba(0,0,0,0.5)', animation: 'fadeIn 0.3s ease both' }}>
+          <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent)' }}/>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 6 }}>Reset your password</div>
+            <div style={{ fontSize: 12, color: '#475569' }}>Enter your email and we'll send a reset link</div>
+          </div>
+          <form onSubmit={handleForgot} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <label style={{ fontSize: 10, color: '#475569', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block', marginBottom: 5 }}>Email address</label>
+              <input type="email" value={forgotEmail} required onChange={e => setForgotEmail(e.target.value)} placeholder="you@example.com"
+                style={{ width: '100%', background: '#080810', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 7, padding: '10px 13px', fontSize: 13, color: '#e2e8f0', outline: 'none', fontFamily: 'inherit' }}/>
+            </div>
+            {error && <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 7, padding: '8px 12px', fontSize: 12, color: '#f87171' }}>{error}</div>}
+            <button type="submit" disabled={forgotLoading} style={{ width: '100%', padding: '12px', border: 'none', borderRadius: 9, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: '#fff', fontSize: 14, fontWeight: 700, fontFamily: 'inherit', cursor: forgotLoading ? 'default' : 'pointer', opacity: forgotLoading ? 0.65 : 1 }}>
+              {forgotLoading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+          </form>
+          <div style={{ marginTop: 16, textAlign: 'center' }}>
+            <button type="button" onClick={backToLogin} style={{ background: 'none', border: 'none', color: '#475569', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>← Back to Login</button>
+          </div>
+        </div>
+      )}
+
+      {/* Forgot sent card */}
+      {view === 'forgot-sent' && (
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 420, background: '#0c0c18', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '40px 30px', boxShadow: '0 32px 80px rgba(0,0,0,0.5)', textAlign: 'center', animation: 'fadeIn 0.3s ease both' }}>
+          <div style={{ fontSize: 36, marginBottom: 16 }}>📬</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>Check your email</div>
+          <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, marginBottom: 24 }}>
+            If <strong style={{ color: '#94a3b8' }}>{forgotEmail}</strong> is registered,<br/>you'll receive a reset link shortly.
+          </div>
+          <button type="button" onClick={backToLogin} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '9px 20px', color: '#94a3b8', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>← Back to Login</button>
+        </div>
+      )}
+
+      {/* Auth Card */}
+      {view === 'auth' && <div style={{
         position: 'relative', zIndex: 1, width: '100%', maxWidth: 420,
         background: '#0c0c18', border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: 18, padding: '34px 30px 28px',
@@ -220,6 +278,28 @@ export default function AuthPage({ onAuth }) {
             </div>
           )}
 
+          {/* Remember me — login only */}
+          {!isRegister && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: -4 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 7, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={e => setRememberMe(e.target.checked)}
+                  style={{ accentColor: '#6366f1', width: 13, height: 13, cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: 12, color: '#64748b' }}>Remember me</span>
+              </label>
+              <button
+                type="button"
+                onClick={goForgot}
+                style={{ background: 'none', border: 'none', color: '#6366f1', fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
           {/* Checkboxes — register only */}
           {isRegister && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 2 }}>
@@ -292,7 +372,7 @@ export default function AuthPage({ onAuth }) {
             : <>Don't have an account yet?{' '}<button type="button" onClick={() => switchTab('register')} style={{ background:'none', border:'none', color:'#6366f1', cursor:'pointer', fontSize:12, fontFamily:'inherit', padding:0 }}>Register for free</button></>
           }
         </div>
-      </div>
+      </div>}
 
       {/* Page footer */}
       <div style={{

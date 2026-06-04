@@ -52,6 +52,14 @@ try:
 except Exception:
     pass
 
+try:
+    with engine.connect() as _conn5:
+        _conn5.execute(text("ALTER TABLE users ADD COLUMN reset_token VARCHAR;"))
+        _conn5.execute(text("ALTER TABLE users ADD COLUMN reset_token_expires TIMESTAMP;"))
+        _conn5.commit()
+except Exception:
+    pass
+
 limiter = Limiter(key_func=get_remote_address)
 
 IS_PROD = bool(os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("DATABASE_URL", "").startswith("postgresql"))
