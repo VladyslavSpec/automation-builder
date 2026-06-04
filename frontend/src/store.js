@@ -110,8 +110,10 @@ export const useStore = create(persist((set, get) => ({
 
     const baseName = nodeType.split('.').pop().split('_')[0];
     const s = get();
-    const existing = s.nodes.filter(n => n.data.nodeType === nodeType).length;
-    const id = `${baseName}${existing + 1}`;
+    const existingIds = new Set(s.nodes.map(n => n.id));
+    let counter = 1;
+    while (existingIds.has(`${baseName}${counter}`)) counter++;
+    const id = `${baseName}${counter}`;
     const lastNode = s.nodes[s.nodes.length - 1];
     const position = lastNode
       ? { x: lastNode.position.x + 240, y: lastNode.position.y }
