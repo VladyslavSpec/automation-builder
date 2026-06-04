@@ -49,16 +49,16 @@ export default function AutomationNode({ id, data, selected }) {
         position: 'relative',
         boxShadow: glow,
         transition: 'box-shadow 0.2s, border-color 0.2s',
-        overflow: 'hidden',
       }}
     >
       {/* Top accent line */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+        position: 'absolute', top: 0, left: 0, right: 0, height: 2, borderRadius: '10px 10px 0 0',
         background: isActive
           ? `linear-gradient(90deg, transparent, ${data.color}cc, transparent)`
           : `linear-gradient(90deg, transparent, ${data.color}50, transparent)`,
         transition: 'opacity 0.2s',
+        overflow: 'hidden',
       }}/>
 
       {/* Status badge */}
@@ -151,17 +151,23 @@ export default function AutomationNode({ id, data, selected }) {
       }}>{id}</div>
 
       {/* Handles */}
-      <Handle type="target" position={Position.Left} style={{
-        background: data.color, width: 10, height: 10,
-        border: '2px solid #0d0d1a',
-        boxShadow: `0 0 6px ${data.color}70`,
-        left: -5,
+      <Handle type="target" position={Position.Left} className="automation-handle" style={{
+        background: isActive ? data.color : `${data.color}99`,
+        width: isActive ? 16 : 12, height: isActive ? 16 : 12,
+        border: `2px solid ${isActive ? data.color : '#0d0d1a'}`,
+        boxShadow: isActive ? `0 0 0 3px ${data.color}30, 0 0 12px ${data.color}80` : `0 0 6px ${data.color}50`,
+        left: isActive ? -8 : -6,
+        transition: 'all 0.15s ease',
+        cursor: 'crosshair',
       }}/>
-      <Handle type="source" position={Position.Right} style={{
-        background: data.color, width: 10, height: 10,
-        border: '2px solid #0d0d1a',
-        boxShadow: `0 0 6px ${data.color}70`,
-        right: -5,
+      <Handle type="source" position={Position.Right} className="automation-handle" style={{
+        background: isActive ? data.color : `${data.color}99`,
+        width: isActive ? 16 : 12, height: isActive ? 16 : 12,
+        border: `2px solid ${isActive ? data.color : '#0d0d1a'}`,
+        boxShadow: isActive ? `0 0 0 3px ${data.color}30, 0 0 12px ${data.color}80` : `0 0 6px ${data.color}50`,
+        right: isActive ? -8 : -6,
+        transition: 'all 0.15s ease',
+        cursor: 'crosshair',
       }}/>
     </div>
   );
