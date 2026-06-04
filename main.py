@@ -18,6 +18,7 @@ from models import Workflow, WorkflowExecution
 from api.workflows import router as workflows_router
 from api.executions import router as executions_router
 from api.auth import router as auth_router
+from api.stripe_router import router as stripe_router
 from core.engine import NODE_REGISTRY
 
 Base.metadata.create_all(bind=engine)
@@ -40,6 +41,14 @@ try:
     with engine.connect() as _conn3:
         _conn3.execute(text("ALTER TABLE users ADD COLUMN name VARCHAR;"))
         _conn3.commit()
+except Exception:
+    pass
+
+try:
+    with engine.connect() as _conn4:
+        _conn4.execute(text("ALTER TABLE users ADD COLUMN stripe_customer_id VARCHAR;"))
+        _conn4.execute(text("ALTER TABLE users ADD COLUMN stripe_subscription_id VARCHAR;"))
+        _conn4.commit()
 except Exception:
     pass
 
@@ -85,6 +94,7 @@ async def security_headers(request: Request, call_next):
 app.include_router(auth_router)
 app.include_router(workflows_router)
 app.include_router(executions_router)
+app.include_router(stripe_router)
 
 FRONTEND_DIST = Path(__file__).parent / "frontend" / "dist"
 STATIC_DIR = Path(__file__).parent / "static"
