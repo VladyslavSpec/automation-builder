@@ -116,6 +116,7 @@ function WorkflowEditor({ user, onLogout }) {
   const onNodesChange = useStore(s => s.onNodesChange);
   const onEdgesChange = useStore(s => s.onEdgesChange);
   const onConnect = useStore(s => s.onConnect);
+  const removeEdge = useStore(s => s.removeEdge);
   const addNode = useStore(s => s.addNode);
   const saveWorkflow = useStore(s => s.saveWorkflow);
   const runWorkflow = useStore(s => s.runWorkflow);
@@ -393,6 +394,7 @@ function WorkflowEditor({ user, onLogout }) {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onEdgeDoubleClick={(_, edge) => removeEdge(edge.id)}
             onDrop={onDrop}
             onDragOver={onDragOver}
             nodeTypes={nodeTypes}

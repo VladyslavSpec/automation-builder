@@ -88,6 +88,11 @@ export const useStore = create(persist((set, get) => ({
     edges: addEdge({ ...connection, animated: true }, s.edges),
   })),
 
+  removeEdge: (edgeId) => set(s => ({
+    ...pushHistory(s),
+    edges: s.edges.filter(e => e.id !== edgeId),
+  })),
+
   setWorkflowName: (name) => set({ workflowName: name }),
 
   // ─── Sidebar ──────────────────────────────────────────────────────────────
