@@ -263,6 +263,7 @@ export const useStore = create(persist((set, get) => ({
         const res = await axios.post(`${API}/workflows/`, { name: workflowName, definition });
         set({ workflowId: res.data.id });
       }
+      await get().fetchWorkflows();
     } finally {
       set({ isSaving: false });
     }
