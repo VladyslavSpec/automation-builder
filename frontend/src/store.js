@@ -319,44 +319,44 @@ export const useStore = create(persist((set, get) => ({
   loadSampleWorkflow: () => {
     const nodes = [
       {
-        id: 'webhook1', type: 'automationNode', position: { x: 60, y: 220 },
+        id: 'webhook1', type: 'automationNode', position: { x: 60, y: 240 },
         data: { id:'webhook1', nodeType:'trigger.webhook', label:'Webhook', icon:'', color:'#6366f1',
           config:{ token:'my-youtube-alert' }, fields:[] }
       },
       {
-        id: 'youtube1', type: 'automationNode', position: { x: 320, y: 220 },
+        id: 'youtube1', type: 'automationNode', position: { x: 300, y: 240 },
         data: { id:'youtube1', nodeType:'action.youtube_get_video', label:'Get Video', icon:'', color:'#ef4444',
           config:{ video_id:'{{trigger.video_id}}', api_key:'{{env.YOUTUBE_API_KEY}}' }, fields:[] }
       },
       {
-        id: 'claude1', type: 'automationNode', position: { x: 580, y: 140 },
+        id: 'claude1', type: 'automationNode', position: { x: 540, y: 240 },
         data: { id:'claude1', nodeType:'action.claude_generate', label:'Claude AI', icon:'', color:'#a855f7',
-          config:{ prompt:'Write a Twitter thread about: {{youtube1.title}} - {{youtube1.description}}', model:'claude-haiku-4-5' }, fields:[] }
+          config:{ prompt:'Write a short post (3-4 sentences) about this YouTube video:\nTitle: {{youtube1.title}}\nDescription: {{youtube1.description}}\n\nMake it engaging for social media.', model:'claude-haiku-4-5' }, fields:[] }
       },
       {
-        id: 'twitter1', type: 'automationNode', position: { x: 840, y: 140 },
-        data: { id:'twitter1', nodeType:'action.twitter_post_thread', label:'Post Thread', icon:'', color:'#e2e8f0',
-          config:{ text:'{{claude1.text}}', api_key:'{{env.TWITTER_API_KEY}}' }, fields:[] }
+        id: 'telegram1', type: 'automationNode', position: { x: 800, y: 80 },
+        data: { id:'telegram1', nodeType:'action.telegram_send_message', label:'Telegram Post', icon:'', color:'#0ea5e9',
+          config:{ bot_token:'{{env.TG_TOKEN}}', chat_id:'{{env.TG_CHAT_ID}}', text:'🎬 {{youtube1.title}}\n\n{{claude1.text}}\n\n▶️ https://youtu.be/{{trigger.video_id}}' }, fields:[] }
       },
       {
-        id: 'claude2', type: 'automationNode', position: { x: 580, y: 320 },
-        data: { id:'claude2', nodeType:'action.claude_generate', label:'Claude AI', icon:'', color:'#a855f7',
-          config:{ prompt:'Write a short Telegram summary (2-3 sentences) about: {{youtube1.title}}', model:'claude-haiku-4-5' }, fields:[] }
+        id: 'discord1', type: 'automationNode', position: { x: 800, y: 240 },
+        data: { id:'discord1', nodeType:'action.discord_send_message', label:'Discord Post', icon:'', color:'#5865F2',
+          config:{ webhook_url:'{{env.DISCORD_WEBHOOK}}', content:'🎬 **{{youtube1.title}}**\n\n{{claude1.text}}\n\n▶️ https://youtu.be/{{trigger.video_id}}', username:'Weavo' }, fields:[] }
       },
       {
-        id: 'telegram1', type: 'automationNode', position: { x: 840, y: 320 },
-        data: { id:'telegram1', nodeType:'action.telegram_send_message', label:'Send Message', icon:'', color:'#0ea5e9',
-          config:{ bot_token:'{{env.TG_TOKEN}}', chat_id:'{{env.TG_CHAT_ID}}', text:'New Video: {{youtube1.title}}\n\n{{claude2.text}}' }, fields:[] }
+        id: 'sheets1', type: 'automationNode', position: { x: 800, y: 400 },
+        data: { id:'sheets1', nodeType:'action.sheets_append_row', label:'Sheets Report', icon:'', color:'#22c55e',
+          config:{ service_account:'{{env.GOOGLE_SA_JSON}}', spreadsheet_id:'{{env.SHEETS_ID}}', sheet_name:'Reports', values:'{{youtube1.title}}, {{youtube1.view_count}}, {{youtube1.like_count}}, {{trigger.video_id}}' }, fields:[] }
       },
     ];
     const edges = [
       { id:'e1', source:'webhook1', target:'youtube1', animated:true },
       { id:'e2', source:'youtube1', target:'claude1', animated:true },
-      { id:'e3', source:'youtube1', target:'claude2', animated:true },
-      { id:'e4', source:'claude1',  target:'twitter1', animated:true },
-      { id:'e5', source:'claude2',  target:'telegram1', animated:true },
+      { id:'e3', source:'claude1', target:'telegram1', animated:true },
+      { id:'e4', source:'claude1', target:'discord1', animated:true },
+      { id:'e5', source:'claude1', target:'sheets1', animated:true },
     ];
-    set({ nodes, edges, workflowId:null, workflowName:'YouTube Content Amplifier', lastExecution:null, executions:[], configPanelNode:null, history:[], historyFuture:[] });
+    set({ nodes, edges, workflowId:null, workflowName:'YouTube → TG + Discord + Sheets', lastExecution:null, executions:[], configPanelNode:null, history:[], historyFuture:[] });
   },
 
   fetchExecutions: async () => {
