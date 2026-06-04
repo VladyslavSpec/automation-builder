@@ -39,6 +39,7 @@ def list_workflows(
             "is_active": w.is_active,
             "created_at": w.created_at,
             "updated_at": w.updated_at,
+            "definition": w.definition,
         }
         for w in workflows
     ]
