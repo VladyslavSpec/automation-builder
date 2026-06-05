@@ -114,10 +114,30 @@ export const useStore = create(persist((set, get) => ({
     let counter = 1;
     while (existingIds.has(`${baseName}${counter}`)) counter++;
     const id = `${baseName}${counter}`;
-    const lastNode = s.nodes[s.nodes.length - 1];
-    const position = lastNode
-      ? { x: lastNode.position.x + 240, y: lastNode.position.y }
-      : { x: 80, y: 200 };
+
+    // Smart placement: find a free grid slot, no overlapping
+    const NODE_W = 210, NODE_H = 110, PAD_X = 24, PAD_Y = 24;
+    const isOccupied = (x, y) => s.nodes.some(n =>
+      Math.abs(n.position.x - x) < NODE_W + PAD_X &&
+      Math.abs(n.position.y - y) < NODE_H + PAD_Y
+    );
+    let position = { x: 80, y: 200 };
+    if (s.nodes.length > 0) {
+      const last = s.nodes[s.nodes.length - 1];
+      // Build candidate grid sorted by distance from last node
+      const candidates = [];
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 12; col++) {
+          candidates.push({ x: 80 + col * (NODE_W + PAD_X), y: 80 + row * (NODE_H + PAD_Y + 20) });
+        }
+      }
+      candidates.sort((a, b) =>
+        Math.hypot(a.x - last.position.x, a.y - last.position.y) -
+        Math.hypot(b.x - last.position.x, b.y - last.position.y)
+      );
+      const free = candidates.find(c => !isOccupied(c.x, c.y));
+      position = free || { x: last.position.x + NODE_W + PAD_X, y: last.position.y };
+    }
 
     const defaultConfig = {};
     (nodeMeta.fields || []).forEach(f => {

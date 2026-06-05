@@ -7,9 +7,18 @@ import AccountPanel from './AccountPanel';
 import SettingsPanel from './SettingsPanel';
 import PlansPanel from './PlansPanel';
 import DocsPanel from './DocsPanel';
+import AIChatPanel from './AIChatPanel';
 
 // Clean geometric SVG icons — 15×15 viewBox, stroke-based
 const Icons = {
+  ai: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <rect x="1.5" y="2.5" width="12" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
+      <path d="M6 12.5l1.5-2 1.5 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="4.5" y1="5.5" x2="10.5" y2="5.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="4.5" y1="7.8" x2="8" y2="7.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    </svg>
+  ),
   nodes: (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="1" y="1" width="5.5" height="5.5" rx="1" stroke="currentColor" strokeWidth="1.4"/>
@@ -52,9 +61,9 @@ const Icons = {
   ),
 };
 
-const TOP_NAV_IDS    = ['nodes', 'workflows', 'docs'];
+const TOP_NAV_IDS    = ['nodes', 'ai', 'workflows', 'docs'];
 const BOTTOM_NAV_IDS = ['plans', 'settings', 'account'];
-const NAV_ICONS = { nodes: Icons.nodes, workflows: Icons.workflows, docs: Icons.docs, plans: Icons.plans, settings: Icons.settings };
+const NAV_ICONS = { nodes: Icons.nodes, ai: Icons.ai, workflows: Icons.workflows, docs: Icons.docs, plans: Icons.plans, settings: Icons.settings };
 
 export default function Sidebar({ user, onLogout }) {
   const active = useStore(s => s.activeSidebarPanel);
@@ -68,6 +77,7 @@ export default function Sidebar({ user, onLogout }) {
   const renderPanel = () => {
     switch (active) {
       case 'nodes':     return <NodeSidebarPanel />;
+      case 'ai':        return <AIChatPanel />;
       case 'workflows': return <WorkflowsPanel />;
       case 'docs':      return <DocsPanel />;
       case 'settings':  return <SettingsPanel />;
@@ -133,7 +143,7 @@ export default function Sidebar({ user, onLogout }) {
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', paddingTop: 4 }}>
           {TOP_NAV_IDS.map(id => (
-            <NavBtn key={id} id={id} label={t(`nav.${id}`, lang)} icon={NAV_ICONS[id]} />
+            <NavBtn key={id} id={id} label={id === 'ai' ? 'AI Assistant' : t(`nav.${id}`, lang)} icon={NAV_ICONS[id]} />
           ))}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', paddingBottom: 10 }}>

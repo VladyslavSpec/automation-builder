@@ -17,7 +17,7 @@ import ExecutionPanel from './components/ExecutionPanel';
 import AuthPage from './components/AuthPage';
 import DotBackground from './components/DotBackground';
 import FlowControls from './components/FlowControls';
-import ClaudeChat from './components/ClaudeChat';
+import NodeSpotlight from './components/NodeSpotlight';
 
 const API = import.meta.env.VITE_API_URL || '';
 const nodeTypes = { automationNode: AutomationNode };
@@ -129,6 +129,7 @@ function WorkflowEditor({ user, onLogout }) {
   const closeConfig = useStore(s => s.closeConfig);
   const fetchWorkflows = useStore(s => s.fetchWorkflows);
   const [rightOpen, setRightOpen] = useState(false);
+  const [spotlightOpen, setSpotlightOpen] = useState(false);
   const loadSampleWorkflow = useStore(s => s.loadSampleWorkflow);
   const history = useStore(s => s.history);
   const historyFuture = useStore(s => s.historyFuture);
@@ -148,10 +149,12 @@ function WorkflowEditor({ user, onLogout }) {
       // Always-on shortcuts
       if (ctrl && e.key === 's') { e.preventDefault(); saveWorkflow(); return; }
       if (ctrl && e.key === 'Enter') { e.preventDefault(); runWorkflow(); return; }
-      if (e.key === 'Escape') { closeConfig(); return; }
+      if (e.key === 'Escape') { if (spotlightOpen) { setSpotlightOpen(false); return; } closeConfig(); return; }
 
       // Shortcuts blocked when inside an input
       if (inInput) return;
+
+      if (e.key === ' ') { e.preventDefault(); setSpotlightOpen(o => !o); return; }
 
       if (ctrl && !e.shiftKey && e.key === 'z') { e.preventDefault(); useStore.getState().undo(); return; }
       if (ctrl && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) { e.preventDefault(); useStore.getState().redo(); return; }
@@ -164,7 +167,7 @@ function WorkflowEditor({ user, onLogout }) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [saveWorkflow, runWorkflow, closeConfig]);
+  }, [saveWorkflow, runWorkflow, closeConfig, spotlightOpen]);
 
   const onDragOver = useCallback(e => {
     e.preventDefault();
@@ -312,6 +315,25 @@ function WorkflowEditor({ user, onLogout }) {
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#ffffff12'; e.currentTarget.style.color = '#64748b'; }}
           >
             {isSaving ? t('app.saving', lang) : t('app.save', lang)}
+          </button>
+
+          {/* Node spotlight hint */}
+          <button
+            onClick={() => setSpotlightOpen(true)}
+            title="Add node (Space)"
+            style={{
+              background: 'transparent', border: '1px solid #ffffff08',
+              borderRadius: 5, color: '#334155',
+              padding: '4px 10px', cursor: 'pointer',
+              fontSize: 10, fontWeight: 500, letterSpacing: 0.2,
+              fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 5,
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(99,102,241,0.2)'; e.currentTarget.style.color='#818cf8'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor='#ffffff08'; e.currentTarget.style.color='#334155'; }}
+          >
+            <span style={{ fontSize: 12 }}>⊕</span> Add node
+            <kbd style={{ background: '#111122', border: '1px solid #ffffff08', borderRadius: 3, padding: '0 4px', fontSize: 9, color: '#253040', fontFamily: 'monospace' }}>Space</kbd>
           </button>
 
           {/* Run */}
@@ -495,7 +517,7 @@ function WorkflowEditor({ user, onLogout }) {
         </div>
       </div>
 
-      <ClaudeChat />
+      {spotlightOpen && <NodeSpotlight onClose={() => setSpotlightOpen(false)} />}
     </div>
   );
 }
