@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON, ForeignKey, Enum
+from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON, ForeignKey, Enum, Integer, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 import uuid
@@ -32,6 +32,8 @@ class User(Base):
     stripe_subscription_id = Column(String, nullable=True)
     reset_token = Column(String, nullable=True)
     reset_token_expires = Column(DateTime, nullable=True)
+    chat_free_used = Column(Integer, default=0)
+    chat_free_reset = Column(Date, nullable=True)
 
     workflows = relationship("Workflow", back_populates="user")
 

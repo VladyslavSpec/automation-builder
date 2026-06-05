@@ -2,6 +2,35 @@ import { useState, useRef, useEffect } from 'react';
 import { useStore } from '../store';
 import axios from 'axios';
 
+function LimitBanner({ onGoToSettings }) {
+  return (
+    <div style={{
+      margin: '4px 0', padding: '10px 12px',
+      background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(124,58,237,0.06))',
+      border: '1px solid rgba(99,102,241,0.2)',
+      borderRadius: 10,
+    }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: '#818cf8', marginBottom: 4 }}>
+        Daily limit reached
+      </div>
+      <div style={{ fontSize: 10, color: '#475569', lineHeight: 1.6, marginBottom: 8 }}>
+        Free plan includes 10 AI messages/day using shared credits. Add your own Anthropic API key for unlimited access.
+      </div>
+      <button
+        onClick={onGoToSettings}
+        style={{
+          background: 'linear-gradient(135deg,#6366f1,#7c3aed)', border: 'none',
+          borderRadius: 6, padding: '5px 12px', color: '#fff',
+          fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+          boxShadow: '0 0 10px rgba(99,102,241,0.3)',
+        }}
+      >
+        Add API key in Settings →
+      </button>
+    </div>
+  );
+}
+
 const API = import.meta.env.VITE_API_URL || '';
 
 const SUGGESTIONS = [
@@ -29,7 +58,10 @@ export default function AIChatPanel() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [limitHit, setLimitHit] = useState(false);
+  const [usageInfo, setUsageInfo] = useState(null); // {used, limit, ownKey}
   const bottomRef = useRef(null);
+  const setActivePanel = useStore(s => s.setActiveSidebarPanel);
   const nodes = useStore(s => s.nodes);
   const edges = useStore(s => s.edges);
 
@@ -61,8 +93,18 @@ export default function AIChatPanel() {
         workflow_context: buildContext(),
       });
       setMessages([...updated, { role: 'assistant', content: res.data.content }]);
-    } catch {
-      setMessages([...updated, { role: 'assistant', content: 'Something went wrong. Please try again.' }]);
+      if (!res.data.used_own_key) {
+        setUsageInfo({ used: res.data.messages_used, limit: res.data.messages_limit });
+      } else {
+        setUsageInfo({ ownKey: true });
+      }
+    } catch (err) {
+      if (err.response?.status === 429) {
+        setLimitHit(true);
+        setMessages([...updated]);
+      } else {
+        setMessages([...updated, { role: 'assistant', content: 'Something went wrong. Please try again.' }]);
+      }
     } finally {
       setLoading(false);
     }
@@ -140,17 +182,48 @@ export default function AIChatPanel() {
             </div>
           </div>
         )}
+        {limitHit && (
+          <LimitBanner onGoToSettings={() => setActivePanel('settings')} />
+        )}
         <div ref={bottomRef} />
       </div>
+
+      {/* Usage counter (only when using server key) */}
+      {usageInfo && !usageInfo.ownKey && !limitHit && (
+        <div style={{
+          padding: '4px 10px', borderTop: '1px solid #ffffff06',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexShrink: 0,
+        }}>
+          <span style={{ fontSize: 9, color: '#253040' }}>
+            Free: {usageInfo.used}/{usageInfo.limit} today
+          </span>
+          <button
+            onClick={() => setActivePanel('settings')}
+            style={{
+              background: 'none', border: 'none', fontSize: 9, color: '#334155',
+              cursor: 'pointer', fontFamily: 'inherit', padding: '1px 4px', borderRadius: 3,
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#6366f1'}
+            onMouseLeave={e => e.currentTarget.style.color = '#334155'}
+          >Add own key →</button>
+        </div>
+      )}
+      {usageInfo?.ownKey && (
+        <div style={{ padding: '4px 10px', borderTop: '1px solid #ffffff06', flexShrink: 0 }}>
+          <span style={{ fontSize: 9, color: '#253040' }}>✓ Using your own API key · Unlimited</span>
+        </div>
+      )}
 
       {/* Input */}
       <div style={{ padding: '8px 10px 10px', borderTop: '1px solid #ffffff0a', flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
           <textarea
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => !limitHit && setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder="Ask Claude..."
+            placeholder={limitHit ? 'Daily limit reached — add your API key' : 'Ask Claude...'}
+            disabled={limitHit}
             rows={2}
             style={{
               flex: 1, background: '#08080f', border: '1px solid #ffffff0d',

@@ -62,6 +62,14 @@ try:
 except Exception:
     pass
 
+try:
+    with engine.connect() as _conn6:
+        _conn6.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS chat_free_used INTEGER DEFAULT 0;"))
+        _conn6.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS chat_free_reset DATE;"))
+        _conn6.commit()
+except Exception:
+    pass
+
 limiter = Limiter(key_func=get_remote_address)
 
 IS_PROD = bool(os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("DATABASE_URL", "").startswith("postgresql"))
