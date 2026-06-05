@@ -17,6 +17,7 @@ import ExecutionPanel from './components/ExecutionPanel';
 import AuthPage from './components/AuthPage';
 import DotBackground from './components/DotBackground';
 import FlowControls from './components/FlowControls';
+import ClaudeChat from './components/ClaudeChat';
 
 const API = import.meta.env.VITE_API_URL || '';
 const nodeTypes = { automationNode: AutomationNode };
@@ -127,6 +128,7 @@ function WorkflowEditor({ user, onLogout }) {
   const configPanelNode = useStore(s => s.configPanelNode);
   const closeConfig = useStore(s => s.closeConfig);
   const fetchWorkflows = useStore(s => s.fetchWorkflows);
+  const [rightOpen, setRightOpen] = useState(false);
   const loadSampleWorkflow = useStore(s => s.loadSampleWorkflow);
   const history = useStore(s => s.history);
   const historyFuture = useStore(s => s.historyFuture);
@@ -134,6 +136,7 @@ function WorkflowEditor({ user, onLogout }) {
   const reactFlowWrapper = useRef(null);
 
   useEffect(() => { fetchWorkflows(); }, []);
+  useEffect(() => { if (configPanelNode) setRightOpen(true); }, [configPanelNode]);
 
   // ─── Global Hotkeys ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -344,25 +347,6 @@ function WorkflowEditor({ user, onLogout }) {
           </button>
         </div>
 
-        {/* Hotkey hint bar */}
-        <div style={{
-          height: 24, background: '#0c0c1a', borderBottom: '1px solid #ffffff0a',
-          display: 'flex', alignItems: 'center', padding: '0 14px', gap: 14, flexShrink: 0,
-          overflowX: 'auto',
-        }}>
-          {HOTKEY_HINTS.map(([key, label]) => (
-            <span key={key} style={{ fontSize: 10, color: '#253040', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-              <kbd style={{
-                background: '#0c0c18', border: '1px solid #ffffff08', borderRadius: 3,
-                padding: '0px 5px', fontSize: 9, color: '#3d4f62', fontFamily: 'monospace', letterSpacing: 0,
-              }}>
-                {key}
-              </kbd>
-              {label}
-            </span>
-          ))}
-        </div>
-
         {/* Canvas */}
         <div ref={reactFlowWrapper} style={{ flex: 1, position: 'relative', background: '#0b0b1c' }}>
           {/* Ambient glows — brighter */}
@@ -466,24 +450,52 @@ function WorkflowEditor({ user, onLogout }) {
         </div>
       </div>
 
-      {/* Right panel */}
-      <div style={{
-        width: 300, background: '#10101e', borderLeft: '1px solid #ffffff12',
-        display: 'flex', flexDirection: 'column', flexShrink: 0,
-      }}>
-        {configPanelNode ? (
-          <ConfigPanel />
-        ) : (
-          <>
-            <div style={{ padding: '11px 14px', borderBottom: '1px solid #ffffff0d' }}>
-              <div style={{ fontSize: 11, color: '#475569', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>
-                Execution
-              </div>
-            </div>
-            <ExecutionPanel />
-          </>
-        )}
+      {/* Right panel — collapsible */}
+      <div style={{ display: 'flex', flexShrink: 0, position: 'relative' }}>
+        {/* Toggle tab */}
+        <button
+          onClick={() => setRightOpen(o => !o)}
+          title={rightOpen ? 'Collapse panel' : 'Expand panel'}
+          style={{
+            position: 'absolute', left: -13, top: '50%', transform: 'translateY(-50%)',
+            width: 13, height: 40, borderRadius: '4px 0 0 4px',
+            background: '#111120', border: '1px solid #ffffff0d', borderRight: 'none',
+            color: '#334155', cursor: 'pointer', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', fontSize: 9,
+            zIndex: 20, transition: 'color 0.1s, background 0.1s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#818cf8'; e.currentTarget.style.background = '#14142a'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#334155'; e.currentTarget.style.background = '#111120'; }}
+        >
+          {rightOpen ? '›' : '‹'}
+        </button>
+
+        <div style={{
+          width: rightOpen ? 280 : 0,
+          overflow: 'hidden',
+          transition: 'width 0.18s ease',
+          background: '#10101e',
+          borderLeft: rightOpen ? '1px solid #ffffff0d' : 'none',
+          display: 'flex', flexDirection: 'column',
+        }}>
+          <div style={{ width: 280, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            {configPanelNode ? (
+              <ConfigPanel />
+            ) : (
+              <>
+                <div style={{ padding: '11px 14px', borderBottom: '1px solid #ffffff0d', flexShrink: 0 }}>
+                  <div style={{ fontSize: 11, color: '#475569', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>
+                    Execution
+                  </div>
+                </div>
+                <ExecutionPanel />
+              </>
+            )}
+          </div>
+        </div>
       </div>
+
+      <ClaudeChat />
     </div>
   );
 }

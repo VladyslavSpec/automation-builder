@@ -20,6 +20,7 @@ from api.executions import router as executions_router
 from api.auth import router as auth_router
 from api.stripe_router import router as stripe_router
 from api.admin import router as admin_router
+from api.chat import router as chat_router
 from core.engine import NODE_REGISTRY
 
 Base.metadata.create_all(bind=engine)
@@ -105,6 +106,7 @@ app.include_router(workflows_router)
 app.include_router(executions_router)
 app.include_router(stripe_router)
 app.include_router(admin_router)
+app.include_router(chat_router)
 
 FRONTEND_DIST = Path(__file__).parent / "frontend" / "dist"
 STATIC_DIR = Path(__file__).parent / "static"
