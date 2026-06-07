@@ -38,6 +38,15 @@ class User(Base):
     workflows = relationship("Workflow", back_populates="user")
 
 
+class NewsletterSubscriber(Base):
+    __tablename__ = "newsletter_subscribers"
+
+    id = Column(String, primary_key=True, default=new_id)
+    email = Column(String, unique=True, nullable=False)
+    source = Column(String, default="landing")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 class Workflow(Base):
     __tablename__ = "workflows"
 

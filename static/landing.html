@@ -133,6 +133,27 @@
     .btn-hero-secondary:hover { color:var(--text); border-color:rgba(255,255,255,.12); background:var(--surface); }
     .hero-note { font-size:12px; color:var(--dim); margin-top:16px; }
 
+    /* ── EMAIL CAPTURE ── */
+    .email-capture { margin-top:28px; max-width:420px; }
+    .email-capture-form { display:flex; gap:8px; }
+    .email-input {
+      flex:1; font-family:inherit; font-size:14px; color:var(--text);
+      background:var(--surface2); border:1px solid var(--border);
+      border-radius:8px; padding:11px 16px; outline:none;
+      transition:border-color .2s;
+    }
+    .email-input::placeholder { color:var(--muted); }
+    .email-input:focus { border-color:rgba(99,102,241,.5); }
+    .btn-email-sub {
+      font-family:inherit; font-size:13px; font-weight:600; color:#fff;
+      background:var(--accent); border:none; border-radius:8px;
+      padding:11px 20px; cursor:pointer; white-space:nowrap;
+      transition:background .15s;
+    }
+    .btn-email-sub:hover { background:#818cf8; }
+    .email-capture-note { font-size:11px; color:var(--dim); margin-top:8px; }
+    .email-capture-success { font-size:13px; color:var(--green); margin-top:8px; display:none; }
+
     /* ── 3D SCENE CONTAINER ── */
     .scene-wrap {
       position:relative; height:520px;
@@ -298,7 +319,7 @@
 <!-- ── NAV ── -->
 <nav>
   <div class="nav-inner">
-    <a href="/landing" class="nav-logo">
+    <a href="/" class="nav-logo">
       <div class="nav-logo-icon">
         <svg width="26" height="26" viewBox="0 0 32 32" fill="none"
              style="filter: drop-shadow(0 0 4px rgba(99,102,241,0.6)) drop-shadow(0 0 10px rgba(124,58,237,0.35));">
@@ -360,6 +381,14 @@
           <a href="#how"><button class="btn-hero btn-hero-secondary">See how it works</button></a>
         </div>
         <p class="hero-note fade-in">No credit card required — free plan, forever.</p>
+        <div class="email-capture fade-in">
+          <form class="email-capture-form" id="newsletter-form">
+            <input class="email-input" type="email" id="newsletter-email" placeholder="your@email.com" required />
+            <button class="btn-email-sub" type="submit">Notify me</button>
+          </form>
+          <p class="email-capture-note">Get notified when new templates & features drop.</p>
+          <p class="email-capture-success" id="newsletter-success">✓ You're in! We'll keep you posted.</p>
+        </div>
       </div>
 
       <!-- 3D Scene -->
@@ -879,6 +908,28 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   cursorGlow.style.left=cgx+'px'; cursorGlow.style.top=cgy+'px';
   requestAnimationFrame(loop);
 })();
+
+document.getElementById('newsletter-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('newsletter-email').value;
+  const btn = e.target.querySelector('button');
+  btn.textContent = '...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/newsletter', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, source: 'landing'})
+    });
+    if (res.ok) {
+      document.getElementById('newsletter-form').style.display = 'none';
+      document.getElementById('newsletter-success').style.display = 'block';
+    }
+  } catch {
+    btn.textContent = 'Notify me';
+    btn.disabled = false;
+  }
+});
 </script>
 </body>
 </html>

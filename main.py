@@ -14,7 +14,8 @@ from slowapi.errors import RateLimitExceeded
 load_dotenv()
 
 from database import engine, Base, get_db
-from models import Workflow, WorkflowExecution
+from models import Workflow, WorkflowExecution, NewsletterSubscriber
+from pydantic import BaseModel, EmailStr
 from api.workflows import router as workflows_router
 from api.executions import router as executions_router
 from api.auth import router as auth_router
@@ -125,6 +126,23 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/")
+def root():
+    landing_file = STATIC_DIR / "landing.html"
+    if landing_file.exists():
+        return FileResponse(str(landing_file))
+    if FRONTEND_DIST.exists():
+        return FileResponse(str(FRONTEND_DIST / "index.html"))
+    return {"name": "Weavo", "status": "running"}
+
+
+@app.get("/app")
+def serve_app():
+    if FRONTEND_DIST.exists():
+        return FileResponse(str(FRONTEND_DIST / "index.html"))
+    return {"error": "App not found"}
+
+
 @app.get("/landing")
 def landing():
     landing_file = STATIC_DIR / "landing.html"
@@ -133,16 +151,23 @@ def landing():
     return {"error": "Landing page not found"}
 
 
-@app.get("/")
-def root():
-    if FRONTEND_DIST.exists():
-        return FileResponse(str(FRONTEND_DIST / "index.html"))
-    return {
-        "name": "Automation Builder",
-        "version": "0.1.0",
-        "status": "running",
-        "docs": "/docs",
-    }
+class NewsletterRequest(BaseModel):
+    email: str
+    source: str = "landing"
+
+
+@app.post("/newsletter")
+def subscribe_newsletter(data: NewsletterRequest, db: Session = Depends(get_db)):
+    email = data.email.strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Invalid email")
+    existing = db.query(NewsletterSubscriber).filter(NewsletterSubscriber.email == email).first()
+    if existing:
+        return {"status": "already_subscribed"}
+    subscriber = NewsletterSubscriber(email=email, source=data.source)
+    db.add(subscriber)
+    db.commit()
+    return {"status": "subscribed"}
 
 
 @app.get("/node-types")
