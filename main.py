@@ -223,6 +223,16 @@ async def webhook_trigger(token: str, request: Request, db: Session = Depends(ge
 if FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
 
+    @app.get("/favicon.svg")
+    def favicon_svg():
+        return FileResponse(str(FRONTEND_DIST / "favicon.svg"), media_type="image/svg+xml")
+
+    @app.get("/favicon.ico")
+    def favicon_ico():
+        # Redirect browsers that request .ico to the SVG favicon
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/favicon.svg", status_code=301)
+
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):
         file = FRONTEND_DIST / full_path
